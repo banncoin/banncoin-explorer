@@ -247,7 +247,7 @@ function updatePagination() {
   // Add visible page numbers - FIX: Properly highlight current page
   for (let i = startPage; i <= endPage; i++) {
     if (i === currentPage) {
-      paginationHtml += `<button class="page-btn current-page" disabled>${i}</button>`;
+      paginationHtml += `<button class="page-btn current-page" disabled style="background: #ffd700 !important; color: #000 !important; font-weight: bold !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;">${i}</button>`;
     } else {
       paginationHtml += `<button onclick="goToPage(${i})" class="page-btn">${i}</button>`;
     }
@@ -275,11 +275,19 @@ function updatePagination() {
   console.log(`📄 Updated pagination: Page ${currentPage} of ${totalPages}`);
 }
 
-// Navigation functions - FIXED VERSION
+// Navigation functions - FIXED VERSION with better interaction
 function previousPage() {
   if (currentPage > 1 && !isLoading) {
     currentPage--;
     console.log(`⬅️ Going to previous page: ${currentPage}`);
+    
+    // Add visual feedback
+    const prevBtn = document.getElementById('prevBtn');
+    if (prevBtn) {
+      prevBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => { prevBtn.style.transform = ''; }, 150);
+    }
+    
     displayBlocks();
     updatePagination();
     updateStats();
@@ -291,6 +299,14 @@ function nextPage() {
   if (currentPage < totalPages && !isLoading) {
     currentPage++;
     console.log(`➡️ Going to next page: ${currentPage}`);
+    
+    // Add visual feedback
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+      nextBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => { nextBtn.style.transform = ''; }, 150);
+    }
+    
     displayBlocks();
     updatePagination();
     updateStats();
@@ -302,6 +318,14 @@ function goToPage(page) {
   if (page >= 1 && page <= totalPages && !isLoading) {
     currentPage = page;
     console.log(`🎯 Going to page: ${currentPage}`);
+    
+    // Add visual feedback
+    const clickedBtn = event.target;
+    if (clickedBtn) {
+      clickedBtn.style.transform = 'scale(0.95)';
+      setTimeout(() => { clickedBtn.style.transform = ''; }, 150);
+    }
+    
     displayBlocks();
     updatePagination();
     updateStats();
