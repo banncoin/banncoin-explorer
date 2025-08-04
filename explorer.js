@@ -82,8 +82,8 @@ async function displayBlocks() {
 
             // Special handling for genesis block message
             let genesisMessage = '';
-            if (i === 0 && message) {
-                genesisMessage = `<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "${message}"</div>`;
+            if (i === 0 && block.message) {
+                genesisMessage = `<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "${block.message}"</div>`;
             }
 
             html += `
