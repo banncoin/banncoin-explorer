@@ -80,6 +80,12 @@ async function displayBlocks() {
             const isFounder = rewardTo === founderWallet;
             const founderClass = isFounder ? 'founder' : '';
 
+            // Special handling for genesis block message
+            let genesisMessage = '';
+            if (i === 0 && message) {
+                genesisMessage = `<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "${message}"</div>`;
+            }
+
             html += `
                 <div class="block-item ${founderClass}" onclick="searchBlock(${i})">
                     <div class="block-number">${blockNumber}</div>
@@ -87,6 +93,7 @@ async function displayBlocks() {
                     <div class="block-reward">${reward} BNC</div>
                     <div class="block-miner">${rewardTo}</div>
                     <div class="block-time">${time}</div>
+                    ${genesisMessage}
                 </div>
             `;
         }
