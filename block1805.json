@@ -1,0 +1,11 @@
+{
+    "amount": 333,
+    "hash": "0006b333c784676374d8e28e61081a68eed52d7f2dbd72b96ed672a548162cb4",
+    "index": 1805,
+    "message": "The current’s moving...",
+    "nonce": 8894,
+    "previous_hash": "000af7e6828bc5397104a80d3591f215bfb772f98010cc2c05003b41fe04daa3",
+    "reward_to": "bc1q94jv4durr3kjvufsvnmxzsxcz7kwcs0cn8mxn0",
+    "timestamp": "2025-08-02T17:57:26Z",
+    "transactions": []
+}
