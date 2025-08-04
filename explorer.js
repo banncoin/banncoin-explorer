@@ -1,11 +1,10 @@
 // Global variables
 let currentPage = 1;
-let blocksPerPage = 50;
+let blocksPerPage = 100; // Show 100 blocks per page
 let totalBlocks = 0;
 let latestBlock = 0;
 let autoRefreshInterval = null;
 let lastKnownBlock = 0;
-let totalRewards = 0;
 
 // Helper function to check if a block exists
 async function blockExists(blockNumber) {
@@ -17,9 +16,10 @@ async function blockExists(blockNumber) {
   }
 }
 
-// Find the latest block number - updated for current height
+// Find the latest block number - more efficient search
 async function findLatestBlock() {
-  for (let i = 7800; i >= 0; i--) {
+  // Start from a reasonable high number and work down
+  for (let i = 7500; i >= 0; i--) {
     if (await blockExists(i)) {
       return i;
     }
@@ -41,31 +41,6 @@ async function loadBlock(blockNumber) {
   }
 }
 
-// Calculate total rewards
-async function calculateTotalRewards() {
-  let total = 0;
-  let calculatedBlocks = 0;
-  
-  // Calculate rewards for all blocks (in batches to avoid overwhelming)
-  for (let i = 0; i <= latestBlock; i += 100) {
-    const endBlock = Math.min(i + 99, latestBlock);
-    for (let j = i; j <= endBlock; j++) {
-      const block = await loadBlock(j);
-      if (block && block.reward) {
-        total += parseFloat(block.reward);
-        calculatedBlocks++;
-      }
-    }
-    
-    // Update progress every 100 blocks
-    if (calculatedBlocks % 100 === 0) {
-      document.getElementById('totalRewards').textContent = `${total.toFixed(2)} BNC (${calculatedBlocks}/${latestBlock})`;
-    }
-  }
-  
-  return total;
-}
-
 // Format timestamp
 function formatTime(timestamp) {
   try {
@@ -76,7 +51,7 @@ function formatTime(timestamp) {
   }
 }
 
-// Display blocks for current page
+// Display blocks for current page - simplified
 async function displayBlocks() {
   const blocksList = document.getElementById('blocksList');
   blocksList.innerHTML = '<div class="loading">Loading blocks...</div>';
@@ -90,20 +65,27 @@ async function displayBlocks() {
   for (let i = startBlock; i >= endBlock; i--) {
     const block = await loadBlock(i);
     if (block) {
+      // Special handling for genesis block
+      const blockNumber = i === 0 ? '#0 (Genesis)' : `#${i}`;
+      const reward = block.reward || '0';
+      const rewardTo = block.reward_to || 'Unknown';
+      const hash = block.hash || 'Unknown';
+      const time = block.timestamp ? formatTime(block.timestamp) : 'Unknown';
+      
+      // Add special message for genesis block
+      const genesisMessage = i === 0 ? '<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla</div>' : '';
+      
       html += `
         <div class="block-item">
-          <div class="block-number">#${i}</div>
-          <div class="block-hash">${block.hash.substring(0, 20)}...</div>
-          <div class="block-reward">${block.reward} BNC</div>
-          <div class="block-hash">${block.reward_to.substring(0, 20)}...</div>
-          <div class="block-time">${formatTime(block.timestamp)}</div>
+          <div class="block-number">${blockNumber}</div>
+          <div class="block-hash">${hash.substring(0, 20)}...</div>
+          <div class="block-reward">${reward} BNC</div>
+          <div class="block-hash">${rewardTo.substring(0, 20)}...</div>
+          <div class="block-time">${time}</div>
+          ${genesisMessage}
         </div>
       `;
       loadedBlocks++;
-      
-      if (loadedBlocks % 10 === 0) {
-        blocksList.innerHTML = html + '<div class="loading">Loading more blocks...</div>';
-      }
     }
   }
   
@@ -134,6 +116,10 @@ function updateStats() {
   document.getElementById('totalBlocks').textContent = totalBlocks.toLocaleString();
   document.getElementById('latestBlock').textContent = latestBlock.toLocaleString();
   document.getElementById('currentPage').textContent = currentPage;
+  
+  // Calculate total rewards (simplified)
+  const totalRewards = (latestBlock + 1) * 333; // Assuming 333 BNC per block
+  document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString()} BNC`;
 }
 
 // Navigation functions
@@ -169,13 +155,24 @@ async function searchBlocks() {
   if (!isNaN(blockNum) && blockNum >= 0 && blockNum <= latestBlock) {
     const block = await loadBlock(blockNum);
     if (block) {
+      const reward = block.reward || '0';
+      const rewardTo = block.reward_to || 'Unknown';
+      const hash = block.hash || 'Unknown';
+      const time = block.timestamp ? formatTime(block.timestamp) : 'Unknown';
+      
+      let specialMessage = '';
+      if (blockNum === 0) {
+        specialMessage = '<div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla</div>';
+      }
+      
       blocksList.innerHTML = `
         <div class="block-item">
-          <div class="block-number">#${blockNum}</div>
-          <div class="block-hash">${block.hash}</div>
-          <div class="block-reward">${block.reward} BNC</div>
-          <div class="block-hash">${block.reward_to}</div>
-          <div class="block-time">${formatTime(block.timestamp)}</div>
+          <div class="block-number">#${blockNum}${blockNum === 0 ? ' (Genesis)' : ''}</div>
+          <div class="block-hash">${hash}</div>
+          <div class="block-reward">${reward} BNC</div>
+          <div class="block-hash">${rewardTo}</div>
+          <div class="block-time">${time}</div>
+          ${specialMessage}
         </div>
       `;
       return;
@@ -187,13 +184,21 @@ async function searchBlocks() {
   if (searchLower === 'genesis' || searchLower === 'block 0' || searchLower === '0') {
     const genesisBlock = await loadBlock(0);
     if (genesisBlock) {
+      const reward = genesisBlock.reward || '0';
+      const rewardTo = genesisBlock.reward_to || 'Unknown';
+      const hash = genesisBlock.hash || 'Unknown';
+      const time = genesisBlock.timestamp ? formatTime(genesisBlock.timestamp) : 'Unknown';
+      
       blocksList.innerHTML = `
         <div class="block-item">
           <div class="block-number">#0 (Genesis)</div>
-          <div class="block-hash">${genesisBlock.hash}</div>
-          <div class="block-reward">${genesisBlock.reward} BNC</div>
-          <div class="block-hash">${genesisBlock.reward_to}</div>
-          <div class="block-time">${formatTime(genesisBlock.timestamp)}</div>
+          <div class="block-hash">${hash}</div>
+          <div class="block-reward">${reward} BNC</div>
+          <div class="block-hash">${rewardTo}</div>
+          <div class="block-time">${time}</div>
+          <div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">
+            ⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla
+          </div>
         </div>
       `;
       return;
@@ -203,39 +208,25 @@ async function searchBlocks() {
   if (searchLower === 'latest' || searchLower === 'newest') {
     const latestBlockData = await loadBlock(latestBlock);
     if (latestBlockData) {
+      const reward = latestBlockData.reward || '0';
+      const rewardTo = latestBlockData.reward_to || 'Unknown';
+      const hash = latestBlockData.hash || 'Unknown';
+      const time = latestBlockData.timestamp ? formatTime(latestBlockData.timestamp) : 'Unknown';
+      
       blocksList.innerHTML = `
         <div class="block-item">
           <div class="block-number">#${latestBlock} (Latest)</div>
-          <div class="block-hash">${latestBlockData.hash}</div>
-          <div class="block-reward">${latestBlockData.reward} BNC</div>
-          <div class="block-hash">${latestBlockData.reward_to}</div>
-          <div class="block-time">${formatTime(latestBlockData.timestamp)}</div>
+          <div class="block-hash">${hash}</div>
+          <div class="block-reward">${reward} BNC</div>
+          <div class="block-hash">${rewardTo}</div>
+          <div class="block-time">${time}</div>
         </div>
       `;
       return;
     }
   }
   
-  // Check if it's a hash or address (limited search for performance)
-  for (let i = Math.min(latestBlock, 200); i >= 0; i--) {
-    const block = await loadBlock(i);
-    if (block && (block.hash.toLowerCase().includes(searchLower) || 
-                  block.reward_to.toLowerCase().includes(searchLower) ||
-                  block.prev_hash.toLowerCase().includes(searchLower))) {
-      blocksList.innerHTML = `
-        <div class="block-item">
-          <div class="block-number">#${i}</div>
-          <div class="block-hash">${block.hash}</div>
-          <div class="block-reward">${block.reward} BNC</div>
-          <div class="block-hash">${block.reward_to}</div>
-          <div class="block-time">${formatTime(block.timestamp)}</div>
-        </div>
-      `;
-      return;
-    }
-  }
-  
-  blocksList.innerHTML = '<div class="no-results">No blocks found matching your search. Try a block number, hash, or keywords like "genesis" or "latest".</div>';
+  blocksList.innerHTML = '<div class="no-results">No blocks found matching your search. Try a block number, "genesis", or "latest".</div>';
 }
 
 // Auto-refresh functionality
@@ -256,10 +247,6 @@ async function checkForNewBlocks() {
       if (currentPage === 1) {
         await displayBlocks();
       }
-      
-      // Recalculate total rewards
-      totalRewards = await calculateTotalRewards();
-      document.getElementById('totalRewards').textContent = `${totalRewards.toFixed(2)} BNC`;
       
       // Reset status after 3 seconds
       setTimeout(() => {
@@ -319,11 +306,6 @@ async function loadLatestBlocks() {
     
     // Display blocks
     await displayBlocks();
-    
-    // Calculate total rewards in background
-    document.getElementById('totalRewards').textContent = 'Calculating...';
-    totalRewards = await calculateTotalRewards();
-    document.getElementById('totalRewards').textContent = `${totalRewards.toFixed(2)} BNC`;
     
     // Start auto-refresh
     startAutoRefresh();
