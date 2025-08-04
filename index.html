@@ -17,6 +17,23 @@
             color: #ffd700;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Mesmerizing background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            animation: backgroundPulse 8s ease-in-out infinite;
+            z-index: -1;
         }
 
         .header {
@@ -28,11 +45,12 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
         }
 
         .header:hover {
             transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.8);
         }
 
         .header::before {
@@ -42,7 +60,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s;
         }
 
@@ -54,6 +72,7 @@
             font-size: 2.5em;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: titleGlow 3s ease-in-out infinite alternate;
         }
 
         .header p {
@@ -70,6 +89,19 @@
             align-items: center;
             gap: 15px;
             flex-wrap: wrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            animation: shimmer 3s infinite;
         }
 
         .search-input {
@@ -81,12 +113,14 @@
             font-size: 16px;
             min-width: 300px;
             transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
         .search-input:focus {
             outline: none;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
             transform: scale(1.05);
+            border-color: #ffed4e;
         }
 
         .search-btn, .latest-btn {
@@ -99,15 +133,32 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn::before, .latest-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .search-btn:hover::before, .latest-btn:hover::before {
+            left: 100%;
         }
 
         .search-btn:hover, .latest-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
         }
 
         .search-btn:active, .latest-btn:active {
-            transform: translateY(-1px);
+            transform: translateY(-1px) scale(1.02);
         }
 
         .stats-container {
@@ -115,7 +166,7 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             padding: 20px;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
@@ -127,11 +178,31 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.4);
             border-color: #ffed4e;
         }
 
@@ -139,12 +210,18 @@
             font-size: 1.2em;
             margin-bottom: 10px;
             color: #ffd700;
+            position: relative;
+            z-index: 1;
         }
 
         .stat-card .value {
-            font-size: 2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #ffed4e;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            animation: valuePulse 2s ease-in-out infinite;
         }
 
         .blocks-header {
@@ -157,6 +234,20 @@
             font-weight: bold;
             margin: 0 20px;
             border-radius: 10px 10px 0 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blocks-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
         }
 
         .block-item {
@@ -169,17 +260,36 @@
             border-bottom: 1px solid rgba(255, 215, 0, 0.2);
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .block-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .block-item:hover::before {
+            left: 100%;
         }
 
         .block-item:hover {
-            background: rgba(255, 215, 0, 0.1);
-            transform: translateX(5px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.15);
+            transform: translateX(8px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            border-left: 4px solid #ffd700;
         }
 
         .block-number {
             font-weight: bold;
             color: #ffed4e;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
 
         .block-hash {
@@ -192,6 +302,8 @@
         .block-reward {
             font-weight: bold;
             color: #32cd32;
+            text-shadow: 0 0 5px rgba(50, 205, 50, 0.5);
+            animation: rewardGlow 2s ease-in-out infinite alternate;
         }
 
         .block-time {
@@ -206,25 +318,47 @@
             gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 15px;
+            margin: 20px;
         }
 
         .pagination button {
             background: #333;
             color: #ffd700;
             border: 2px solid #ffd700;
-            padding: 10px 15px;
-            margin: 0 2px;
+            padding: 12px 18px;
+            margin: 0 3px;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.3s ease;
             font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .pagination button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .pagination button:hover::before {
+            left: 100%;
         }
 
         .pagination button:hover:not(:disabled) {
             background: #ffd700;
             color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
         }
 
         .pagination button:disabled {
@@ -236,17 +370,25 @@
             background: #ffd700 !important;
             color: #000 !important;
             font-weight: bold !important;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6) !important;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8) !important;
+            animation: currentPagePulse 2s ease-in-out infinite;
         }
 
         .pagination input {
             background: #333;
             color: #ffd700;
             border: 2px solid #ffd700;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px 15px;
+            border-radius: 8px;
             text-align: center;
             font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .pagination input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            border-color: #ffed4e;
         }
 
         .pagination span {
@@ -261,6 +403,7 @@
             font-size: 18px;
             color: #ffd700;
             font-weight: bold;
+            animation: loadingPulse 1.5s ease-in-out infinite;
         }
 
         .error {
@@ -277,6 +420,63 @@
             font-size: 18px;
             color: #ffd700;
             font-weight: bold;
+        }
+
+        /* Mesmerizing animations */
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(255, 215, 0, 0.3); }
+            100% { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes valuePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes rewardGlow {
+            0% { text-shadow: 0 0 5px rgba(50, 205, 50, 0.5); }
+            100% { text-shadow: 0 0 15px rgba(50, 205, 50, 0.8); }
+        }
+
+        @keyframes currentPagePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 1); }
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes blockAppear {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .easter-egg {
@@ -301,6 +501,7 @@
             text-align: center;
             max-width: 500px;
             animation: easterEggAppear 0.5s ease-out;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
         }
 
         .contact-info {
@@ -312,18 +513,20 @@
         .contact-info a {
             display: inline-block;
             margin: 5px 10px;
-            padding: 8px 15px;
+            padding: 10px 20px;
             background: #1a1a0a;
             color: #ffd700;
             text-decoration: none;
-            border-radius: 20px;
+            border-radius: 25px;
             transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
         .contact-info a:hover {
             background: #ffd700;
             color: #1a1a0a;
-            transform: scale(1.1);
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
         }
 
         @keyframes easterEggAppear {
@@ -337,28 +540,25 @@
             }
         }
 
-        @keyframes blockAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
         .footer {
             background: rgba(255, 215, 0, 0.1);
             padding: 20px;
             text-align: center;
             margin-top: 40px;
             border-top: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shimmer 4s infinite;
         }
 
         .footer a {
@@ -366,11 +566,14 @@
             text-decoration: none;
             margin: 0 10px;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .footer a:hover {
             color: #ffed4e;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -414,10 +617,6 @@
         <div class="stat-card">
             <h3>Total Rewards</h3>
             <div class="value" id="totalRewards">-</div>
-        </div>
-        <div class="stat-card">
-            <h3>Current Page</h3>
-            <div class="value" id="currentPage">-</div>
         </div>
     </div>
 
