@@ -13,12 +13,12 @@ let isAutoRefreshActive = true;
 let loadedBlocks = []; // Track which blocks we've loaded
 let isLoadingMore = false; // Prevent multiple simultaneous loads
 
-// Simple function to find the latest block (search up to 1000)
+// Simple function to find the latest block (search up to 15000)
 async function findLatestBlock() {
   console.log('🔍 Searching for latest block...');
   
-  // Search from 0 to 1000 to find the latest block
-  for (let i = 1000; i >= 0; i--) {
+  // Search from 15000 down to 0 to find the latest block
+  for (let i = 15000; i >= 0; i--) {
     try {
       const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
