@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banncoin Explorer</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -12,89 +14,207 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Orbitron', monospace;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: #ffd700;
             min-height: 100vh;
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 20px;
+            }
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background: rgba(255, 215, 0, 0.1);
             border-radius: 15px;
             border: 2px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .header h1 {
-            font-size: 2.5em;
+            font-size: 1.8em;
             margin-bottom: 10px;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (min-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
         }
 
         .header p {
-            font-size: 1.2em;
+            font-size: 1em;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @media (min-width: 768px) {
+            .header p {
+                font-size: 1.2em;
+            }
         }
 
         .stats-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-bar {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
         }
 
         .stat-card {
             background: rgba(255, 215, 0, 0.1);
             border: 2px solid #ffd700;
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+            .stat-card {
+                padding: 20px;
+            }
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
         }
+        
+        .stat-card.live {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
 
         .stat-card h3 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+            font-size: 1em;
+            margin-bottom: 8px;
             color: #ffed4e;
+        }
+        
+        @media (min-width: 768px) {
+            .stat-card h3 {
+                font-size: 1.2em;
+                margin-bottom: 10px;
+            }
         }
 
         .stat-card .value {
-            font-size: 1.8em;
+            font-size: 1.4em;
             font-weight: bold;
             color: #ffd700;
         }
+        
+        @media (min-width: 768px) {
+            .stat-card .value {
+                font-size: 1.8em;
+            }
+        }
+        
+        .stat-card .subtitle {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
 
+        .live-ticker {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            animation: tickerGlow 2s infinite;
+        }
+        
+        @keyframes tickerGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 0, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
+        }
+        
         .search-section {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
             background: rgba(255, 215, 0, 0.05);
             border-radius: 15px;
         }
+        
+        @media (min-width: 768px) {
+            .search-section {
+                margin-bottom: 30px;
+                padding: 20px;
+            }
+        }
 
         .search-input {
-            padding: 12px 20px;
+            padding: 10px 15px;
             border: 2px solid #ffd700;
             border-radius: 25px;
             background: #1a1a1a;
             color: #ffd700;
-            font-size: 16px;
-            width: 200px;
-            margin-right: 10px;
+            font-size: 14px;
+            width: 150px;
+            margin-right: 8px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        @media (min-width: 768px) {
+            .search-input {
+                padding: 12px 20px;
+                font-size: 16px;
+                width: 200px;
+                margin-right: 10px;
+            }
         }
 
         .search-input:focus {
@@ -298,22 +418,34 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Bannchain Operations</h1>
-            <p>Banncoin data from mining operations</p>
+            <h1>🌀 Bannchain Operations</h1>
+            <p>Live blockchain data from mining operations</p>
+        </div>
+        
+        <div class="live-ticker" id="liveTicker">
+            🔄 Syncing latest blocks...
         </div>
 
         <div class="stats-bar">
-            <div class="stat-card" onclick="loadLatestBlocks()" style="cursor: pointer;">
-                <h3>Latest Block</h3>
+            <div class="stat-card live" onclick="loadLatestBlocks()" style="cursor: pointer;">
+                <h3>📊 Latest Block</h3>
                 <div class="value" id="latestBlock">-</div>
+                <div class="subtitle">Click to refresh</div>
             </div>
             <div class="stat-card">
-                <h3>Total Rewards</h3>
+                <h3>💰 Total Rewards</h3>
                 <div class="value" id="totalRewards">-</div>
+                <div class="subtitle" id="rewardSubtitle">BNC mined</div>
             </div>
             <div class="stat-card">
-                <h3>Network Status</h3>
-                <div class="value" id="networkStatus">🟢 Live</div>
+                <h3>⚡ Mining Rate</h3>
+                <div class="value" id="miningRate">-</div>
+                <div class="subtitle">blocks/min</div>
+            </div>
+            <div class="stat-card">
+                <h3>🌐 Network</h3>
+                <div class="value">🟢 Live</div>
+                <div class="subtitle">Bannnet Active</div>
             </div>
         </div>
 

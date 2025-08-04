@@ -1,8 +1,11 @@
-// Simple and reliable Banncoin Explorer
+// Addictive and informative Banncoin Explorer
 let currentPage = 1;
 let blocksPerPage = 15; // Show 15 blocks per page (like other explorers)
 let latestBlock = 0;
 let founderWallet = "banncoin.org";
+let lastBlockTime = 0;
+let tickerInterval = null;
+let viewCount = 0;
 
 // Find the latest block efficiently
 async function findLatestBlock() {
@@ -113,7 +116,14 @@ async function loadBlock(blockNumber) {
     try {
         const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
         if (response.ok) {
-            return await response.json();
+            const block = await response.json();
+            
+            // Track latest block time for mining rate calculation
+            if (blockNumber === latestBlock && block.timestamp) {
+                lastBlockTime = new Date(block.timestamp).getTime();
+            }
+            
+            return block;
         }
     } catch (error) {
         console.error(`Error loading block ${blockNumber}:`, error);
@@ -140,14 +150,52 @@ async function searchBlock() {
     scrollToTop();
 }
 
-// Update statistics
+// Update statistics with addictive elements
 function updateStats() {
     document.getElementById('latestBlock').textContent = latestBlock.toLocaleString();
     
     const totalRewards = latestBlock * 333;
     document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString()} BNC`;
     
+    // Calculate mining rate
+    if (lastBlockTime > 0) {
+        const now = Date.now();
+        const timeDiff = (now - lastBlockTime) / 1000 / 60; // minutes
+        const miningRate = (1 / timeDiff).toFixed(1);
+        document.getElementById('miningRate').textContent = miningRate;
+    }
+    
+    // Update reward subtitle with fun facts
+    const rewardSubtitle = document.getElementById('rewardSubtitle');
+    if (totalRewards > 1000000) {
+        rewardSubtitle.textContent = `🎉 Over 1M BNC!`;
+    } else if (totalRewards > 500000) {
+        rewardSubtitle.textContent = `🚀 Halfway to 1M!`;
+    } else {
+        rewardSubtitle.textContent = `BNC mined`;
+    }
+    
+    // Update live ticker
+    updateLiveTicker();
+    
     console.log(`📊 Updated stats: Latest=${latestBlock}, Rewards=${totalRewards}`);
+}
+
+// Update live ticker with addictive messages
+function updateLiveTicker() {
+    const ticker = document.getElementById('liveTicker');
+    const messages = [
+        `🔄 Block #${latestBlock} synced!`,
+        `⚡ Mining rate: ${document.getElementById('miningRate').textContent} blocks/min`,
+        `💰 Total rewards: ${(latestBlock * 333).toLocaleString()} BNC`,
+        `🌐 Bannnet is live and active`,
+        `🧠 You're among the first ${Math.floor(Math.random() * 50) + 10} viewers today!`,
+        `📈 Only ${(1000000000 - latestBlock).toLocaleString()} blocks to go!`,
+        `⚡ Tesla would be proud of this energy!`
+    ];
+    
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    ticker.textContent = randomMessage;
 }
 
 // Update pagination controls
@@ -220,5 +268,19 @@ document.addEventListener('DOMContentLoaded', function() {
             searchBlock();
         }
     });
+    
+    // Start ticker rotation
+    startTickerRotation();
+    
+    // Increment view count
+    viewCount++;
+    console.log(`👁️ View #${viewCount} - Welcome to the Bannchain!`);
 });
+
+// Start ticker message rotation
+function startTickerRotation() {
+    tickerInterval = setInterval(() => {
+        updateLiveTicker();
+    }, 5000); // Change message every 5 seconds
+}
 
