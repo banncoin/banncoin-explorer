@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banncoin Bannchain Explorer</title>
-    <style>
+  <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
+    body {
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             color: #ffd700;
@@ -397,6 +397,17 @@
             font-weight: bold;
         }
 
+        .loading-more {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #ffd700;
+            font-weight: bold;
+            animation: loadingPulse 1.5s ease-in-out infinite;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            margin-top: 20px;
+        }
+
         .loading {
             text-align: center;
             padding: 40px;
@@ -542,7 +553,7 @@
 
         .footer {
             background: rgba(255, 215, 0, 0.1);
-            padding: 20px;
+      padding: 20px;
             text-align: center;
             margin-top: 40px;
             border-top: 2px solid #ffd700;
@@ -574,8 +585,8 @@
             color: #ffed4e;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
             transform: scale(1.1);
-        }
-    </style>
+    }
+  </style>
 </head>
 <body>
     <div class="header" onclick="showEasterEgg()">
@@ -658,6 +669,6 @@
             }
         });
     </script>
-    <script src="explorer.js"></script>
+  <script src="explorer.js"></script>
 </body>
 </html>
