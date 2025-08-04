@@ -75,7 +75,7 @@ async function displayBlocks() {
   const blocksList = document.getElementById('blocksList');
   blocksList.innerHTML = '<div class="loading">Loading blocks...</div>';
 
-  // Calculate which blocks to show for this page (fix pagination)
+  // Calculate which blocks to show for this page (newest blocks first)
   const startBlock = latestBlock - ((currentPage - 1) * blocksPerPage);
   const endBlock = Math.max(0, startBlock - blocksPerPage + 1);
 
@@ -103,9 +103,9 @@ async function displayBlocks() {
       html += `
         <div class="block-item">
           <div class="block-number">${blockNumber}</div>
-          <div class="block-hash">${hash.substring(0, 20)}...</div>
+          <div class="block-hash">${hash}</div>
           <div class="block-reward">${reward} BNC</div>
-          <div class="block-hash">${rewardTo.substring(0, 20)}...</div>
+          <div class="block-hash">${rewardTo}</div>
           <div class="block-time">${time}</div>
           ${genesisMessage}
           ${blockMessage}

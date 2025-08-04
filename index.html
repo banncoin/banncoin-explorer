@@ -178,9 +178,15 @@
             font-size: 1.1em;
         }
         
+        .blocks-header > div {
+            display: grid;
+            grid-template-columns: 80px 1fr 120px 1fr 150px;
+            gap: 15px;
+        }
+        
         .block-item {
             display: grid;
-            grid-template-columns: 80px 1fr 120px 200px 150px;
+            grid-template-columns: 80px 1fr 120px 1fr 150px;
             gap: 15px;
             padding: 15px 20px;
             border-bottom: 1px solid #3a3a2a;
