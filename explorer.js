@@ -13,20 +13,39 @@ let isAutoRefreshActive = true;
 let loadedBlocks = []; // Track which blocks we've loaded
 let isLoadingMore = false; // Prevent multiple simultaneous loads
 
-// Simple function to find the latest block (search up to 15000)
+// Fast function to find the latest block
 async function findLatestBlock() {
   console.log('🔍 Searching for latest block...');
   
-  // Search from 15000 down to 0 to find the latest block
-  for (let i = 15000; i >= 0; i--) {
+  // Start from a reasonable high number and work down
+  const searchPoints = [9000, 8500, 8000, 7500, 7000, 6500, 6000, 5000, 4000, 3000, 2000, 1000, 500, 100, 50, 10, 0];
+  
+  for (let i = 0; i < searchPoints.length; i++) {
+    const blockNum = searchPoints[i];
     try {
-      const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+      const response = await fetch(`block${blockNum.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
-        console.log(`✅ Found latest block: ${i}`);
-        return i;
+        console.log(`✅ Found block ${blockNum}, now finding the highest...`);
+        
+        // Found a block, now find the highest one from here
+        for (let j = blockNum + 1; j <= blockNum + 1000; j++) {
+          try {
+            const nextResponse = await fetch(`block${j.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+            if (nextResponse.ok) {
+              console.log(`✅ Found higher block: ${j}`);
+            } else {
+              console.log(`✅ Latest block found: ${j - 1}`);
+              return j - 1;
+            }
+          } catch (error) {
+            console.log(`✅ Latest block found: ${j - 1}`);
+            return j - 1;
+          }
+        }
+        return blockNum;
       }
     } catch (error) {
-      // Continue searching
+      // Continue to next search point
     }
   }
   
