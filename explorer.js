@@ -1,6 +1,6 @@
 // Global variables
 let currentPage = 1;
-let blocksPerPage = 99; // Changed to 99 blocks per page as requested
+let blocksPerPage = 333; // Changed to 333 blocks per page as requested
 let totalBlocks = 0;
 let latestBlock = 0;
 let autoRefreshInterval = null;
@@ -232,10 +232,10 @@ function updatePagination() {
     }
   }
 
-  // Add visible page numbers
+  // Add visible page numbers - FIX: Properly highlight current page
   for (let i = startPage; i <= endPage; i++) {
     if (i === currentPage) {
-      paginationHtml += `<button class="current-page" disabled>${i}</button>`;
+      paginationHtml += `<button class="current-page" disabled style="background-color: #ffd700; color: #000; font-weight: bold;">${i}</button>`;
     } else {
       paginationHtml += `<button onclick="goToPage(${i})">${i}</button>`;
     }
@@ -263,10 +263,11 @@ function updatePagination() {
   console.log(`📄 Updated pagination: Page ${currentPage} of ${totalPages}`);
 }
 
-// Navigation functions
+// Navigation functions - FIX: Ensure proper page updates
 function previousPage() {
   if (currentPage > 1 && !isLoading) {
     currentPage--;
+    console.log(`⬅️ Going to previous page: ${currentPage}`);
     displayBlocks();
     updatePagination();
     updateStats();
@@ -277,6 +278,7 @@ function nextPage() {
   const totalPages = Math.ceil(totalBlocks / blocksPerPage);
   if (currentPage < totalPages && !isLoading) {
     currentPage++;
+    console.log(`➡️ Going to next page: ${currentPage}`);
     displayBlocks();
     updatePagination();
     updateStats();
@@ -287,6 +289,7 @@ function goToPage(page) {
   const totalPages = Math.ceil(totalBlocks / blocksPerPage);
   if (page >= 1 && page <= totalPages && !isLoading) {
     currentPage = page;
+    console.log(`🎯 Going to page: ${currentPage}`);
     displayBlocks();
     updatePagination();
     updateStats();

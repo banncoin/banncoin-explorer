@@ -281,44 +281,43 @@
         }
         
         .pagination button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
-            color: #1a1a0a;
-            font-weight: bold;
+            background: #333;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            padding: 8px 12px;
+            margin: 0 2px;
             cursor: pointer;
+            border-radius: 4px;
             transition: all 0.3s ease;
         }
-        
+
         .pagination button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+            background: #ffd700;
+            color: #000;
         }
-        
+
         .pagination button:disabled {
-            background: #666;
-            color: #999;
+            opacity: 0.5;
             cursor: not-allowed;
         }
-        
-        .pagination .current-page {
-            background: #32cd32 !important;
-            color: white !important;
+
+        .pagination button.current-page {
+            background-color: #ffd700 !important;
+            color: #000 !important;
+            font-weight: bold !important;
         }
-        
-        .pagination span {
-            color: #fff8dc;
-            margin: 0 5px;
-        }
-        
+
         .pagination input {
-            padding: 8px;
-            border: none;
-            border-radius: 5px;
-            background: #2a2a1a;
-            color: #fff8dc;
-            text-align: center;
+            background: #333;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pagination span {
+            color: #ffd700;
+            margin: 0 5px;
         }
         
         /* Matrix-like flowing animations */
