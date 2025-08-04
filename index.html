@@ -5,26 +5,33 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
+            background: #1a1a0a;
+            color: #fff8dc;
             margin: 0;
             padding: 20px;
         }
         
         .header {
-            background: #161b22;
+            background: linear-gradient(135deg, #2a2a0a 0%, #3d3d0a 100%);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            border: 1px solid #30363d;
+            border: 1px solid #ffd700;
+            box-shadow: 0 4px 6px rgba(255, 215, 0, 0.2);
         }
         
         .header h1 {
             margin: 0;
-            color: #58a6ff;
+            color: #ffd700;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 28px;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            color: #daa520;
         }
         
         .search-bar {
@@ -36,26 +43,36 @@
         
         .search-bar input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            background: #0d1117;
-            color: #c9d1d9;
+            padding: 12px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: #2a2a0a;
+            color: #fff8dc;
             font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #ffed4e;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
         
         .search-bar button {
-            padding: 10px 20px;
-            background: #238636;
-            color: white;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+            color: #1a1a0a;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s;
         }
         
         .search-bar button:hover {
-            background: #2ea043;
+            background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
+            transform: translateY(-1px);
         }
         
         .stats {
@@ -66,51 +83,58 @@
         }
         
         .stat-card {
-            background: #161b22;
-            padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
+            background: linear-gradient(135deg, #2a2a0a 0%, #3d3d0a 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ffd700;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.1);
         }
         
         .stat-card h3 {
             margin: 0 0 10px 0;
-            color: #58a6ff;
+            color: #ffd700;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-card .value {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            color: #c9d1d9;
+            color: #fff8dc;
         }
         
         .blocks-container {
-            background: #161b22;
-            border-radius: 8px;
-            border: 1px solid #30363d;
+            background: linear-gradient(135deg, #2a2a0a 0%, #3d3d0a 100%);
+            border-radius: 12px;
+            border: 1px solid #ffd700;
             overflow: hidden;
+            box-shadow: 0 4px 6px rgba(255, 215, 0, 0.1);
         }
         
         .blocks-header {
-            background: #21262d;
+            background: linear-gradient(135deg, #3d3d0a 0%, #4a4a0a 100%);
             padding: 15px 20px;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px solid #ffd700;
             font-weight: bold;
-            color: #58a6ff;
+            color: #ffd700;
+            font-size: 14px;
         }
         
         .block-item {
             padding: 15px 20px;
-            border-bottom: 1px solid #30363d;
+            border-bottom: 1px solid #4a4a0a;
             display: grid;
             grid-template-columns: 80px 1fr 120px 200px 150px;
             gap: 15px;
             align-items: center;
-            transition: background 0.2s;
+            transition: all 0.3s;
         }
         
         .block-item:hover {
-            background: #21262d;
+            background: linear-gradient(135deg, #3d3d0a 0%, #4a4a0a 100%);
+            transform: translateX(5px);
+            border-left: 3px solid #ffd700;
         }
         
         .block-item:last-child {
@@ -119,23 +143,25 @@
         
         .block-number {
             font-weight: bold;
-            color: #58a6ff;
+            color: #ffd700;
+            font-size: 16px;
         }
         
         .block-hash {
             font-family: 'Courier New', monospace;
             font-size: 12px;
-            color: #8b949e;
+            color: #daa520;
             word-break: break-all;
         }
         
         .block-reward {
-            color: #3fb950;
+            color: #32cd32;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .block-time {
-            color: #8b949e;
+            color: #daa520;
             font-size: 12px;
         }
         
@@ -143,22 +169,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
             padding: 20px;
         }
         
         .pagination button {
-            padding: 8px 12px;
-            background: #21262d;
-            color: #c9d1d9;
-            border: 1px solid #30363d;
-            border-radius: 6px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #3d3d0a 0%, #4a4a0a 100%);
+            color: #fff8dc;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
         }
         
-        .pagination button:hover {
-            background: #30363d;
+        .pagination button:hover:not(:disabled) {
+            background: linear-gradient(135deg, #4a4a0a 0%, #ffd700 100%);
+            color: #1a1a0a;
+            transform: translateY(-1px);
         }
         
         .pagination button:disabled {
@@ -167,34 +197,55 @@
         }
         
         .pagination .current-page {
-            background: #58a6ff;
-            color: white;
-            border-color: #58a6ff;
+            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+            color: #1a1a0a;
+            border-color: #ffd700;
         }
         
         .loading {
             text-align: center;
             padding: 40px;
-            color: #8b949e;
+            color: #ffd700;
+            font-size: 16px;
         }
         
         .error {
-            color: #f85149;
+            color: #ff6b6b;
             text-align: center;
             padding: 20px;
+            font-size: 16px;
         }
         
         .no-results {
             text-align: center;
             padding: 40px;
-            color: #8b949e;
+            color: #daa520;
+            font-size: 16px;
+        }
+        
+        .auto-refresh {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+            color: #1a1a0a;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
+    <div class="auto-refresh" id="autoRefreshStatus">
+        🔄 Auto-refresh: ON
+    </div>
+    
     <div class="header">
         <h1>
-            <span style="font-size: 24px;">🔍</span>
+            <span style="font-size: 32px;">🔍</span>
             Banncoin Blockchain Explorer
         </h1>
         <p>Live blockchain data from mining operations</p>
