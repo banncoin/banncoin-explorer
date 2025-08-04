@@ -11,21 +11,27 @@ let retryCount = 0;
 const maxRetries = 3;
 let isAutoRefreshActive = true;
 
-// Find the latest block number - much more efficient approach
+// Find the latest block number - search upward from genesis
 async function findLatestBlock() {
-  console.log('🔍 Searching for latest block...');
+  console.log('🔍 Searching for latest block (upward from genesis)...');
   
-  // Start from a known range where we expect blocks to be
-  // Since we know you have ~7940+ blocks, start from 8000
-  const startBlock = 8000;
-  const endBlock = 0;
+  // Search upward from genesis (0) to find the latest block
+  // This is much more efficient and always catches new blocks
+  // For 3.3 billion coins at 333 per block = ~10 million blocks
+  const startBlock = 0;
+  const maxSearch = 15000000; // Search up to 15 million to handle 3.3 billion coins
   
-  for (let i = startBlock; i >= endBlock; i--) {
+  for (let i = startBlock; i <= maxSearch; i++) {
     try {
       const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
-        console.log(`✅ Found latest block: ${i}`);
-        return i;
+        // Continue searching to find the highest block
+        continue;
+      } else if (response.status === 404) {
+        // Block not found - we've reached the end
+        const latestBlock = i - 1;
+        console.log(`✅ Found latest block: ${latestBlock}`);
+        return latestBlock;
       } else if (response.status === 429) {
         // Rate limit hit - wait and retry
         console.log('⚠️ Rate limit hit, waiting...');
@@ -37,17 +43,22 @@ async function findLatestBlock() {
         console.log('⚠️ Rate limit error, waiting...');
         await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
+      } else if (error.message.includes('404')) {
+        // Block not found - we've reached the end
+        const latestBlock = i - 1;
+        console.log(`✅ Found latest block: ${latestBlock}`);
+        return latestBlock;
       }
       // Continue searching
     }
     
-    // Show progress every 100 blocks
-    if (i % 100 === 0) {
-      console.log(`Searching... ${i}`);
+    // Show progress every 1000 blocks to reduce console spam
+    if (i % 1000 === 0) {
+      console.log(`Searching upward... ${i}`);
     }
   }
   
-  console.log('❌ No blocks found in expected range');
+  console.log('❌ No blocks found or search limit reached');
   return 0;
 }
 
@@ -414,29 +425,25 @@ async function searchBlocks() {
 function checkForNewBlocks() {
   if (isLoading) return;
   
+  console.log('🔄 Checking for new blocks...');
   findLatestBlock().then(newLatestBlock => {
     if (newLatestBlock > lastKnownBlock) {
+      console.log(`🎉 New blocks found! Latest: ${newLatestBlock} (was: ${lastKnownBlock})`);
       lastKnownBlock = newLatestBlock;
       latestBlock = newLatestBlock;
       totalBlocks = latestBlock + 1;
+      
+      // Update stats immediately
       updateStats();
-      if (currentPage === 1) { // Only auto-refresh if on first page
+      
+      // If on first page, refresh the block display
+      if (currentPage === 1) {
         displayBlocks();
       }
+      
       updatePagination();
-      
-      // Fun notification for new blocks
-      const blocksList = document.getElementById('blocksList');
-      const notification = document.createElement('div');
-      notification.className = 'new-block-notification';
-      notification.innerHTML = `🎉 New block #${newLatestBlock} found! 🎉`;
-      blocksList.insertBefore(notification, blocksList.firstChild);
-      
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.remove();
-        }
-      }, 5000);
+    } else {
+      console.log('📊 No new blocks found');
     }
   }).catch(error => {
     console.log('Auto-refresh check failed:', error);
