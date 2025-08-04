@@ -18,6 +18,13 @@
             padding: 20px;
             border-radius: 15px;
             color: #1a1a0a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .header:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(255, 215, 0, 0.4);
         }
         
         .header h1 {
@@ -30,6 +37,61 @@
             margin: 10px 0 0 0;
             font-size: 1.1em;
             opacity: 0.9;
+        }
+        
+        .easter-egg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
+            color: #1a1a0a;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10000;
+            text-align: center;
+            max-width: 400px;
+            display: none;
+            animation: easterEggAppear 0.5s ease-out;
+        }
+        
+        @keyframes easterEggAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .easter-egg h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+        }
+        
+        .easter-egg .lightning {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        
+        .easter-egg .motto {
+            font-style: italic;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        
+        .easter-egg button {
+            background: #1a1a0a;
+            color: #ffd700;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
         }
         
         .search-bar {
@@ -80,6 +142,12 @@
             text-align: center;
             border: 2px solid #ffd700;
             box-shadow: 0 4px 8px rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.3);
         }
         
         .stat-card h3 {
@@ -250,12 +318,23 @@
         🔄 Auto-refresh: ON
     </div>
     
-    <div class="header">
+    <div class="header" onclick="showEasterEgg()">
         <h1>
             <span style="font-size: 32px;">🔍</span>
             Banncoin Bannchain Explorer
         </h1>
         <p>Live Bannchain data from mining operations</p>
+    </div>
+
+    <div class="easter-egg" id="easterEgg">
+        <h2>⚡ BANNCOIN ⚡</h2>
+        <div class="lightning">⚡ 3 ⚡</div>
+        <div class="motto">"BLOCK BY BLOCK"</div>
+        <div style="margin: 15px 0; font-size: 0.9em;">
+            Phase 3 Mainnet<br>
+            Think in terms of energy, frequency and vibration
+        </div>
+        <button onclick="hideEasterEgg()">Close</button>
     </div>
 
     <div class="search-bar">
@@ -301,5 +380,24 @@
     </div>
 
     <script src="explorer.js"></script>
+    <script>
+        // Easter egg functions
+        function showEasterEgg() {
+            document.getElementById('easterEgg').style.display = 'block';
+        }
+        
+        function hideEasterEgg() {
+            document.getElementById('easterEgg').style.display = 'none';
+        }
+        
+        // Close easter egg when clicking outside
+        document.addEventListener('click', function(e) {
+            const easterEgg = document.getElementById('easterEgg');
+            if (e.target !== easterEgg && !easterEgg.contains(e.target) && 
+                !e.target.closest('.header')) {
+                hideEasterEgg();
+            }
+        });
+    </script>
 </body>
 </html>

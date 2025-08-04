@@ -1,6 +1,6 @@
 // Global variables
 let currentPage = 1;
-let blocksPerPage = 20; // Reduced to 20 blocks per page for better performance
+let blocksPerPage = 99; // Changed to 99 blocks per page as requested
 let totalBlocks = 0;
 let latestBlock = 0;
 let autoRefreshInterval = null;
@@ -58,7 +58,7 @@ async function loadLatestBlocks() {
   try {
     latestBlock = await findLatestBlock();
     totalBlocks = latestBlock + 1; // +1 because we start from block 0
-    currentPage = 1; // Reset to first page
+    currentPage = 1; // Reset to first page when loading latest blocks
 
     updateStats();
     await displayBlocks();
@@ -75,7 +75,7 @@ async function displayBlocks() {
   const blocksList = document.getElementById('blocksList');
   blocksList.innerHTML = '<div class="loading">Loading blocks...</div>';
 
-  // Calculate which blocks to show for this page
+  // Calculate which blocks to show for this page (fix pagination)
   const startBlock = latestBlock - ((currentPage - 1) * blocksPerPage);
   const endBlock = Math.max(0, startBlock - blocksPerPage + 1);
 
@@ -224,6 +224,8 @@ function goToPage(page) {
     updatePagination();
   }
 }
+
+
 
 function goToInputPage() {
   const pageInput = document.getElementById('pageInput');
