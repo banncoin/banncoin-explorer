@@ -11,76 +11,44 @@ let retryCount = 0;
 const maxRetries = 3;
 let isAutoRefreshActive = true;
 
-// Find the latest block number - efficient binary search approach
+// Find the latest block number - simple and reliable approach
 async function findLatestBlock() {
-  console.log('🔍 Searching for latest block (binary search)...');
+  console.log('🔍 Searching for latest block (smart range search)...');
   
-  // Use binary search to find the latest block much faster
-  // Start with a reasonable range based on what we know
-  let low = 0;
-  let high = 10000; // Start with 10k, will expand if needed
+  // Start from where we know blocks exist (around 8000)
+  // Search downward from 9000 to find the latest block
+  const startBlock = 9000;
+  const endBlock = 0;
   
-  // First, find a reasonable upper bound
-  while (high < 1000000) { // Cap at 1 million to prevent infinite loops
+  for (let i = startBlock; i >= endBlock; i--) {
     try {
-      const response = await fetch(`block${high.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+      const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
-        // Block exists, expand search range
-        low = high;
-        high = high * 2;
-        console.log(`📈 Expanding search range to ${high}`);
-      } else if (response.status === 404) {
-        // Found upper bound
-        break;
+        console.log(`✅ Found latest block: ${i}`);
+        return i;
       } else if (response.status === 429) {
+        // Rate limit hit - wait and retry
         console.log('⚠️ Rate limit hit, waiting...');
         await new Promise(resolve => setTimeout(resolve, 2000));
         continue;
       }
     } catch (error) {
-      if (error.message.includes('404')) {
-        break;
+      if (error.message.includes('429') || error.message.includes('rate limit')) {
+        console.log('⚠️ Rate limit error, waiting...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
       }
       // Continue searching
     }
-  }
-  
-  // Now binary search within the range
-  let latestBlock = 0;
-  while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
     
-    try {
-      const response = await fetch(`block${mid.toString().padStart(4, '0')}.json?v=${Date.now()}`);
-      if (response.ok) {
-        // Block exists, search higher
-        latestBlock = mid;
-        low = mid + 1;
-      } else if (response.status === 404) {
-        // Block doesn't exist, search lower
-        high = mid - 1;
-      } else if (response.status === 429) {
-        console.log('⚠️ Rate limit hit, waiting...');
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        continue;
-      }
-    } catch (error) {
-      if (error.message.includes('404')) {
-        high = mid - 1;
-      } else {
-        // Continue searching
-        high = mid - 1;
-      }
-    }
-    
-    // Show progress every 100 iterations
-    if (mid % 100 === 0) {
-      console.log(`Binary searching... ${mid}`);
+    // Show progress every 200 blocks to reduce console spam
+    if (i % 200 === 0) {
+      console.log(`Searching... ${i}`);
     }
   }
   
-  console.log(`✅ Found latest block: ${latestBlock}`);
-  return latestBlock;
+  console.log('❌ No blocks found in expected range');
+  return 0;
 }
 
 // Check if a block file exists with rate limit handling
