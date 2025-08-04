@@ -1,6 +1,6 @@
 // Global variables
 let currentPage = 1;
-let blocksPerPage = 333; // Changed to 333 blocks per page as requested
+let blocksPerPage = 100; // Changed back to 100 blocks per page
 let totalBlocks = 0;
 let latestBlock = 0;
 let autoRefreshInterval = null;
@@ -9,6 +9,7 @@ let isLoading = false;
 let isSearching = false;
 let retryCount = 0;
 const maxRetries = 3;
+let isAutoRefreshActive = true;
 
 // Find the latest block number - much more efficient approach
 async function findLatestBlock() {
@@ -99,7 +100,7 @@ async function loadLatestBlocks() {
   retryCount = 0;
   
   const blocksList = document.getElementById('blocksList');
-  blocksList.innerHTML = '<div class="loading">🔍 Searching for latest blocks...</div>';
+  blocksList.innerHTML = '<div class="loading">🚀 Loading latest blocks...</div>';
 
   try {
     console.log('🚀 Loading latest blocks...');
@@ -124,7 +125,7 @@ async function loadLatestBlocks() {
     console.error('❌ Error loading blocks:', error);
     if (retryCount < maxRetries) {
       retryCount++;
-      blocksList.innerHTML = `<div class="loading">Retrying... (${retryCount}/${maxRetries})</div>`;
+      blocksList.innerHTML = `<div class="loading">🔄 Retrying... (${retryCount}/${maxRetries})</div>`;
       setTimeout(loadLatestBlocks, 3000);
     } else {
       blocksList.innerHTML = '<div class="error">❌ Error loading Bannchain data. GitHub Pages may be rate limited. Please refresh in a few minutes.</div>';
@@ -201,7 +202,7 @@ function updateStats() {
   console.log(`📊 Updated stats: Latest=${latestBlock}, Rewards=${totalRewards}, Page=${currentPage}`);
 }
 
-// Update pagination controls
+// Update pagination controls - FIXED VERSION
 function updatePagination() {
   const totalPages = Math.ceil(totalBlocks / blocksPerPage);
   const pagination = document.getElementById('pagination');
@@ -212,7 +213,7 @@ function updatePagination() {
 
   // Build pagination numbers
   let paginationHtml = `
-    <button onclick="previousPage()" id="prevBtn" ${currentPage <= 1 ? 'disabled' : ''}>⬅️ Previous</button>
+    <button onclick="previousPage()" id="prevBtn" ${currentPage <= 1 ? 'disabled' : ''} class="nav-btn">⬅️ Previous</button>
   `;
 
   // Show page numbers with smart truncation
@@ -226,7 +227,7 @@ function updatePagination() {
 
   // Add first page if not visible
   if (startPage > 1) {
-    paginationHtml += `<button onclick="goToPage(1)">1</button>`;
+    paginationHtml += `<button onclick="goToPage(1)" class="page-btn">1</button>`;
     if (startPage > 2) {
       paginationHtml += `<span>...</span>`;
     }
@@ -235,9 +236,9 @@ function updatePagination() {
   // Add visible page numbers - FIX: Properly highlight current page
   for (let i = startPage; i <= endPage; i++) {
     if (i === currentPage) {
-      paginationHtml += `<button class="current-page" disabled style="background-color: #ffd700; color: #000; font-weight: bold;">${i}</button>`;
+      paginationHtml += `<button class="page-btn current-page" disabled>${i}</button>`;
     } else {
-      paginationHtml += `<button onclick="goToPage(${i})">${i}</button>`;
+      paginationHtml += `<button onclick="goToPage(${i})" class="page-btn">${i}</button>`;
     }
   }
 
@@ -246,24 +247,24 @@ function updatePagination() {
     if (endPage < totalPages - 1) {
       paginationHtml += `<span>...</span>`;
     }
-    paginationHtml += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+    paginationHtml += `<button onclick="goToPage(${totalPages})" class="page-btn">${totalPages}</button>`;
   }
 
   // Add page input
   paginationHtml += `
     <span>Go to: <input type="number" id="pageInput" min="1" max="${totalPages}" style="width: 60px; margin: 0 5px;">
-    <button onclick="goToInputPage()">Go</button></span>
+    <button onclick="goToInputPage()" class="nav-btn">Go</button></span>
   `;
 
   paginationHtml += `
-    <button onclick="nextPage()" id="nextBtn" ${currentPage >= totalPages ? 'disabled' : ''}>Next ➡️</button>
+    <button onclick="nextPage()" id="nextBtn" ${currentPage >= totalPages ? 'disabled' : ''} class="nav-btn">Next ➡️</button>
   `;
 
   pagination.innerHTML = paginationHtml;
   console.log(`📄 Updated pagination: Page ${currentPage} of ${totalPages}`);
 }
 
-// Navigation functions - FIX: Ensure proper page updates
+// Navigation functions - FIXED VERSION
 function previousPage() {
   if (currentPage > 1 && !isLoading) {
     currentPage--;
@@ -409,7 +410,7 @@ async function searchBlocks() {
   }
 }
 
-// Auto-refresh functionality with rate limit handling
+// Auto-refresh functionality with 33:33 timing
 function checkForNewBlocks() {
   if (isLoading) return;
   
@@ -423,6 +424,19 @@ function checkForNewBlocks() {
         displayBlocks();
       }
       updatePagination();
+      
+      // Fun notification for new blocks
+      const blocksList = document.getElementById('blocksList');
+      const notification = document.createElement('div');
+      notification.className = 'new-block-notification';
+      notification.innerHTML = `🎉 New block #${newLatestBlock} found! 🎉`;
+      blocksList.insertBefore(notification, blocksList.firstChild);
+      
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.remove();
+        }
+      }, 5000);
     }
   }).catch(error => {
     console.log('Auto-refresh check failed:', error);
@@ -431,7 +445,10 @@ function checkForNewBlocks() {
 
 function startAutoRefresh() {
   if (!autoRefreshInterval) {
-    autoRefreshInterval = setInterval(checkForNewBlocks, 60000); // Check every 60 seconds to avoid rate limits
+    // 33 minutes and 33 seconds = 2013 seconds
+    autoRefreshInterval = setInterval(checkForNewBlocks, 2013000);
+    isAutoRefreshActive = true;
+    console.log('🔄 Auto-refresh started (33:33 interval)');
   }
 }
 
@@ -439,6 +456,8 @@ function stopAutoRefresh() {
   if (autoRefreshInterval) {
     clearInterval(autoRefreshInterval);
     autoRefreshInterval = null;
+    isAutoRefreshActive = false;
+    console.log('⏸️ Auto-refresh stopped');
   }
 }
 
