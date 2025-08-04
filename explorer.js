@@ -7,25 +7,37 @@ let autoRefreshInterval = null;
 let lastKnownBlock = 0;
 let isLoading = false;
 let isSearching = false;
+let retryCount = 0;
+const maxRetries = 3;
 
-// Find the latest block number - more robust search
+// Find the latest block number - more robust search with rate limit handling
 async function findLatestBlock() {
   console.log('🔍 Searching for latest block...');
   
-  // Start from a much higher number since we know you have 7855+ blocks
+  // Start from a much higher number since we know you have 7940+ blocks
   for (let i = 10000; i >= 0; i--) {
     try {
-      const response = await fetch(`block${i.toString().padStart(4, '0')}.json`);
+      const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
         console.log(`✅ Found latest block: ${i}`);
         return i;
+      } else if (response.status === 429) {
+        // Rate limit hit - wait and retry
+        console.log('⚠️ Rate limit hit, waiting...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        continue;
       }
     } catch (error) {
+      if (error.message.includes('429') || error.message.includes('rate limit')) {
+        console.log('⚠️ Rate limit error, waiting...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        continue;
+      }
       // Continue searching
     }
     
-    // Show progress every 100 blocks
-    if (i % 100 === 0) {
+    // Show progress every 500 blocks to reduce console spam
+    if (i % 500 === 0) {
       console.log(`Searching... ${i}`);
     }
   }
@@ -34,22 +46,29 @@ async function findLatestBlock() {
   return 0;
 }
 
-// Check if a block file exists
+// Check if a block file exists with rate limit handling
 async function blockExists(blockNumber) {
   try {
-    const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json`);
+    const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
     return response.ok;
   } catch (error) {
     return false;
   }
 }
 
-// Load a specific block
+// Load a specific block with rate limit handling
 async function loadBlock(blockNumber) {
   try {
-    const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json`);
+    const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
     if (response.ok) {
       return await response.json();
+    } else if (response.status === 429) {
+      // Rate limit - wait and retry once
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const retryResponse = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+      if (retryResponse.ok) {
+        return await retryResponse.json();
+      }
     }
   } catch (error) {
     console.error(`Error loading block ${blockNumber}:`, error);
@@ -73,6 +92,7 @@ async function loadLatestBlocks() {
   
   isLoading = true;
   isSearching = false;
+  retryCount = 0;
   
   const blocksList = document.getElementById('blocksList');
   blocksList.innerHTML = '<div class="loading">🔍 Searching for latest blocks...</div>';
@@ -82,7 +102,7 @@ async function loadLatestBlocks() {
     latestBlock = await findLatestBlock();
     
     if (latestBlock === 0) {
-      blocksList.innerHTML = '<div class="error">❌ No blocks found. Please check your connection.</div>';
+      blocksList.innerHTML = '<div class="error">❌ No blocks found. GitHub Pages may be rate limited. Please try again in a few minutes.</div>';
       return;
     }
     
@@ -98,7 +118,13 @@ async function loadLatestBlocks() {
     console.log('✅ Latest blocks loaded successfully');
   } catch (error) {
     console.error('❌ Error loading blocks:', error);
-    blocksList.innerHTML = '<div class="error">❌ Error loading Bannchain data. Please refresh the page.</div>';
+    if (retryCount < maxRetries) {
+      retryCount++;
+      blocksList.innerHTML = `<div class="loading">Retrying... (${retryCount}/${maxRetries})</div>`;
+      setTimeout(loadLatestBlocks, 2000);
+    } else {
+      blocksList.innerHTML = '<div class="error">❌ Error loading Bannchain data. GitHub Pages may be rate limited. Please refresh in a few minutes.</div>';
+    }
   } finally {
     isLoading = false;
   }
@@ -376,7 +402,7 @@ async function searchBlocks() {
   }
 }
 
-// Auto-refresh functionality
+// Auto-refresh functionality with rate limit handling
 function checkForNewBlocks() {
   if (isLoading) return;
   
@@ -390,24 +416,15 @@ function checkForNewBlocks() {
         displayBlocks();
       }
       updatePagination();
-      
-      // Show notification
-      const status = document.getElementById('autoRefreshStatus');
-      status.innerHTML = `🆕 New block #${newLatestBlock}!`;
-      status.style.background = 'linear-gradient(135deg, #32cd32 0%, #228b22 100%)';
-      
-      setTimeout(() => {
-        status.innerHTML = '🔄 Auto-refresh: ON';
-        status.style.background = 'linear-gradient(135deg, #ffd700 0%, #daa520 100%)';
-      }, 3000);
     }
+  }).catch(error => {
+    console.log('Auto-refresh check failed:', error);
   });
 }
 
 function startAutoRefresh() {
   if (!autoRefreshInterval) {
-    autoRefreshInterval = setInterval(checkForNewBlocks, 10000); // Check every 10 seconds
-    document.getElementById('autoRefreshStatus').textContent = '🔄 Auto-refresh: ON';
+    autoRefreshInterval = setInterval(checkForNewBlocks, 30000); // Check every 30 seconds to avoid rate limits
   }
 }
 
@@ -415,7 +432,6 @@ function stopAutoRefresh() {
   if (autoRefreshInterval) {
     clearInterval(autoRefreshInterval);
     autoRefreshInterval = null;
-    document.getElementById('autoRefreshStatus').textContent = '⏸️ Auto-refresh: OFF';
   }
 }
 

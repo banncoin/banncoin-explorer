@@ -83,6 +83,24 @@
             font-size: 1.1em;
         }
         
+        .easter-egg .contact-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .easter-egg .contact-info a {
+            color: #1a1a0a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .easter-egg .contact-info a:hover {
+            text-decoration: underline;
+        }
+        
         .easter-egg button {
             background: #1a1a0a;
             color: #ffd700;
@@ -228,6 +246,12 @@
             padding: 40px;
             font-size: 1.2em;
             color: #ffd700;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
         
         .error {
@@ -297,27 +321,6 @@
             text-align: center;
         }
         
-        .auto-refresh {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%);
-            color: #1a1a0a;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
-            z-index: 1000;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .auto-refresh:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
-        }
-        
         /* Matrix-like flowing animations */
         @keyframes blockAppear {
             from {
@@ -332,20 +335,6 @@
         
         .block-item {
             animation: blockAppear 0.3s ease-out;
-        }
-        
-        /* Loading animation */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-            color: #ffd700;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
         
         /* Button states */
@@ -363,16 +352,12 @@
     </style>
 </head>
 <body>
-    <div class="auto-refresh" id="autoRefreshStatus" onclick="toggleAutoRefresh()">
-        🔄 Auto-refresh: ON
-    </div>
-    
     <div class="header" onclick="showEasterEgg()">
         <h1>
             <span style="font-size: 32px;">🔍</span>
             Banncoin Bannchain Explorer
         </h1>
-        <p>Live Bannchain data from mining operations</p>
+        <p>Bannchain data from mining operations</p>
     </div>
 
     <div class="easter-egg" id="easterEgg">
@@ -382,6 +367,13 @@
         <div style="margin: 15px 0; font-size: 0.9em;">
             Phase 3 Mainnet<br>
             Think in terms of energy, frequency and vibration
+        </div>
+        <div class="contact-info">
+            <strong>Connect With Us:</strong><br>
+            🌐 <a href="https://shopbannacis.com" target="_blank">shopbannacis.com</a><br>
+            💬 <a href="https://discord.gg/banncoin" target="_blank">Discord</a><br>
+            📧 <a href="mailto:info@banncoin.com">info@banncoin.com</a><br>
+            🐦 <a href="https://twitter.com/banncoin" target="_blank">Twitter</a>
         </div>
         <button onclick="hideEasterEgg()">Close</button>
     </div>
@@ -409,7 +401,7 @@
 
     <div class="blocks-container">
         <div class="blocks-header">
-            <div style="display: grid; grid-template-columns: 80px 1fr 120px 200px 150px; gap: 15px;">
+            <div style="display: grid; grid-template-columns: 80px 1fr 120px 1fr 150px; gap: 15px;">
                 <div>Block</div>
                 <div>Hash</div>
                 <div>Reward</div>
