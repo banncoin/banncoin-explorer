@@ -1,6 +1,6 @@
 // Global variables
 let currentPage = 1;
-let blocksPerPage = 100; // Show 100 blocks per page
+let blocksPerPage = 20; // Reduced to 20 blocks per page for better performance
 let totalBlocks = 0;
 let latestBlock = 0;
 let autoRefreshInterval = null;
@@ -51,17 +51,19 @@ function formatTime(timestamp) {
   }
 }
 
-// Display blocks for current page - simplified
+// Display blocks for current page - only load what's needed
 async function displayBlocks() {
   const blocksList = document.getElementById('blocksList');
   blocksList.innerHTML = '<div class="loading">Loading blocks...</div>';
   
+  // Calculate which blocks to show for this page
   const startBlock = latestBlock - ((currentPage - 1) * blocksPerPage);
   const endBlock = Math.max(0, startBlock - blocksPerPage + 1);
   
   let html = '';
   let loadedBlocks = 0;
   
+  // Only load the blocks for this specific page
   for (let i = startBlock; i >= endBlock; i--) {
     const block = await loadBlock(i);
     if (block) {
@@ -71,8 +73,6 @@ async function displayBlocks() {
       const rewardTo = block.reward_to || 'Unknown';
       const hash = block.hash || 'Unknown';
       const time = block.timestamp ? formatTime(block.timestamp) : 'Unknown';
-      const difficulty = block.difficulty || 'N/A';
-      const nonce = block.nonce || 'N/A';
       const message = block.message || '';
       
       // Add special message for genesis block
@@ -129,11 +129,11 @@ function updateStats() {
   document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString()} BNC`;
 }
 
-// Navigation functions
+// Navigation functions - these will actually change pages
 function previousPage() {
   if (currentPage > 1) {
     currentPage--;
-    displayBlocks();
+    displayBlocks(); // This will load the new page
   }
 }
 
@@ -141,11 +141,11 @@ function nextPage() {
   const totalPages = Math.ceil(totalBlocks / blocksPerPage);
   if (currentPage < totalPages) {
     currentPage++;
-    displayBlocks();
+    displayBlocks(); // This will load the new page
   }
 }
 
-// Enhanced search functionality
+// Enhanced search functionality - only load what's searched
 async function searchBlocks() {
   const searchInput = document.getElementById('searchInput').value.trim();
   const blocksList = document.getElementById('blocksList');
