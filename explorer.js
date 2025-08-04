@@ -10,12 +10,16 @@ let isSearching = false;
 let retryCount = 0;
 const maxRetries = 3;
 
-// Find the latest block number - more robust search with rate limit handling
+// Find the latest block number - much more efficient approach
 async function findLatestBlock() {
   console.log('🔍 Searching for latest block...');
   
-  // Start from a much higher number since we know you have 7940+ blocks
-  for (let i = 10000; i >= 0; i--) {
+  // Start from a known range where we expect blocks to be
+  // Since we know you have ~7940+ blocks, start from 8000
+  const startBlock = 8000;
+  const endBlock = 0;
+  
+  for (let i = startBlock; i >= endBlock; i--) {
     try {
       const response = await fetch(`block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (response.ok) {
@@ -24,7 +28,7 @@ async function findLatestBlock() {
       } else if (response.status === 429) {
         // Rate limit hit - wait and retry
         console.log('⚠️ Rate limit hit, waiting...');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         continue;
       }
     } catch (error) {
@@ -36,13 +40,13 @@ async function findLatestBlock() {
       // Continue searching
     }
     
-    // Show progress every 500 blocks to reduce console spam
-    if (i % 500 === 0) {
+    // Show progress every 100 blocks
+    if (i % 100 === 0) {
       console.log(`Searching... ${i}`);
     }
   }
   
-  console.log('❌ No blocks found');
+  console.log('❌ No blocks found in expected range');
   return 0;
 }
 
@@ -64,7 +68,7 @@ async function loadBlock(blockNumber) {
       return await response.json();
     } else if (response.status === 429) {
       // Rate limit - wait and retry once
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const retryResponse = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (retryResponse.ok) {
         return await retryResponse.json();
@@ -121,7 +125,7 @@ async function loadLatestBlocks() {
     if (retryCount < maxRetries) {
       retryCount++;
       blocksList.innerHTML = `<div class="loading">Retrying... (${retryCount}/${maxRetries})</div>`;
-      setTimeout(loadLatestBlocks, 2000);
+      setTimeout(loadLatestBlocks, 3000);
     } else {
       blocksList.innerHTML = '<div class="error">❌ Error loading Bannchain data. GitHub Pages may be rate limited. Please refresh in a few minutes.</div>';
     }
@@ -424,7 +428,7 @@ function checkForNewBlocks() {
 
 function startAutoRefresh() {
   if (!autoRefreshInterval) {
-    autoRefreshInterval = setInterval(checkForNewBlocks, 30000); // Check every 30 seconds to avoid rate limits
+    autoRefreshInterval = setInterval(checkForNewBlocks, 60000); // Check every 60 seconds to avoid rate limits
   }
 }
 
