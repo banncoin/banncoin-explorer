@@ -65,15 +65,21 @@ async function displayBlocks() {
   for (let i = startBlock; i >= endBlock; i--) {
     const block = await loadBlock(i);
     if (block) {
-      // Special handling for genesis block
+      // Handle different block formats
       const blockNumber = i === 0 ? '#0 (Genesis)' : `#${i}`;
-      const reward = block.reward || '0';
+      const reward = block.amount || block.reward || '0';
       const rewardTo = block.reward_to || 'Unknown';
       const hash = block.hash || 'Unknown';
       const time = block.timestamp ? formatTime(block.timestamp) : 'Unknown';
+      const difficulty = block.difficulty || 'N/A';
+      const nonce = block.nonce || 'N/A';
+      const message = block.message || '';
       
       // Add special message for genesis block
-      const genesisMessage = i === 0 ? '<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla</div>' : '';
+      const genesisMessage = i === 0 && message ? `<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "${message}" — Nikola Tesla</div>` : '';
+      
+      // Add message for other blocks if present
+      const blockMessage = i > 0 && message ? `<div style="color: #daa520; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 12px;">💬 "${message}"</div>` : '';
       
       html += `
         <div class="block-item">
@@ -83,6 +89,7 @@ async function displayBlocks() {
           <div class="block-hash">${rewardTo.substring(0, 20)}...</div>
           <div class="block-time">${time}</div>
           ${genesisMessage}
+          ${blockMessage}
         </div>
       `;
       loadedBlocks++;
@@ -155,14 +162,17 @@ async function searchBlocks() {
   if (!isNaN(blockNum) && blockNum >= 0 && blockNum <= latestBlock) {
     const block = await loadBlock(blockNum);
     if (block) {
-      const reward = block.reward || '0';
+      const reward = block.amount || block.reward || '0';
       const rewardTo = block.reward_to || 'Unknown';
       const hash = block.hash || 'Unknown';
       const time = block.timestamp ? formatTime(block.timestamp) : 'Unknown';
+      const message = block.message || '';
       
       let specialMessage = '';
-      if (blockNum === 0) {
-        specialMessage = '<div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla</div>';
+      if (blockNum === 0 && message) {
+        specialMessage = `<div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">⚡ "${message}" — Nikola Tesla</div>`;
+      } else if (blockNum > 0 && message) {
+        specialMessage = `<div style="color: #daa520; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 14px;">💬 "${message}"</div>`;
       }
       
       blocksList.innerHTML = `
@@ -184,10 +194,11 @@ async function searchBlocks() {
   if (searchLower === 'genesis' || searchLower === 'block 0' || searchLower === '0') {
     const genesisBlock = await loadBlock(0);
     if (genesisBlock) {
-      const reward = genesisBlock.reward || '0';
+      const reward = genesisBlock.amount || genesisBlock.reward || '0';
       const rewardTo = genesisBlock.reward_to || 'Unknown';
       const hash = genesisBlock.hash || 'Unknown';
       const time = genesisBlock.timestamp ? formatTime(genesisBlock.timestamp) : 'Unknown';
+      const message = genesisBlock.message || '';
       
       blocksList.innerHTML = `
         <div class="block-item">
@@ -196,9 +207,7 @@ async function searchBlocks() {
           <div class="block-reward">${reward} BNC</div>
           <div class="block-hash">${rewardTo}</div>
           <div class="block-time">${time}</div>
-          <div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">
-            ⚡ "The present is theirs; the future, for which I really worked, is mine." - Nikola Tesla
-          </div>
+          ${message ? `<div style="color: #ffd700; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 16px;">⚡ "${message}" — Nikola Tesla</div>` : ''}
         </div>
       `;
       return;
@@ -208,10 +217,11 @@ async function searchBlocks() {
   if (searchLower === 'latest' || searchLower === 'newest') {
     const latestBlockData = await loadBlock(latestBlock);
     if (latestBlockData) {
-      const reward = latestBlockData.reward || '0';
+      const reward = latestBlockData.amount || latestBlockData.reward || '0';
       const rewardTo = latestBlockData.reward_to || 'Unknown';
       const hash = latestBlockData.hash || 'Unknown';
       const time = latestBlockData.timestamp ? formatTime(latestBlockData.timestamp) : 'Unknown';
+      const message = latestBlockData.message || '';
       
       blocksList.innerHTML = `
         <div class="block-item">
@@ -220,6 +230,7 @@ async function searchBlocks() {
           <div class="block-reward">${reward} BNC</div>
           <div class="block-hash">${rewardTo}</div>
           <div class="block-time">${time}</div>
+          ${message ? `<div style="color: #daa520; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 14px;">💬 "${message}"</div>` : ''}
         </div>
       `;
       return;
