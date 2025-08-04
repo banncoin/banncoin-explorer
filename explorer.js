@@ -64,21 +64,37 @@ async function blockExists(blockNumber) {
 // Load a specific block with rate limit handling
 async function loadBlock(blockNumber) {
   try {
+    console.log(`📦 Loading block ${blockNumber}...`);
     const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+    
     if (response.ok) {
-      return await response.json();
+      const blockData = await response.json();
+      console.log(`✅ Successfully loaded block ${blockNumber}`);
+      return blockData;
+    } else if (response.status === 404) {
+      console.log(`❌ Block ${blockNumber} not found (404)`);
+      return null;
     } else if (response.status === 429) {
       // Rate limit - wait and retry once
+      console.log(`⚠️ Rate limit for block ${blockNumber}, waiting...`);
       await new Promise(resolve => setTimeout(resolve, 2000));
       const retryResponse = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
       if (retryResponse.ok) {
-        return await retryResponse.json();
+        const blockData = await retryResponse.json();
+        console.log(`✅ Successfully loaded block ${blockNumber} after retry`);
+        return blockData;
+      } else {
+        console.log(`❌ Block ${blockNumber} failed after retry`);
+        return null;
       }
+    } else {
+      console.log(`❌ Block ${blockNumber} failed with status ${response.status}`);
+      return null;
     }
   } catch (error) {
-    console.error(`Error loading block ${blockNumber}:`, error);
+    console.error(`❌ Error loading block ${blockNumber}:`, error);
+    return null;
   }
-  return null;
 }
 
 // Format timestamp
@@ -349,7 +365,8 @@ async function searchBlocks() {
   try {
     // Check if it's a block number
     const blockNum = parseInt(searchInput);
-    if (!isNaN(blockNum) && blockNum >= 0 && blockNum <= latestBlock) {
+    if (!isNaN(blockNum) && blockNum >= 0) {
+      console.log(`🔍 Searching for block ${blockNum}...`);
       const block = await loadBlock(blockNum);
       if (block) {
         const reward = block.amount || block.reward || '0';
@@ -375,7 +392,10 @@ async function searchBlocks() {
             ${specialMessage}
           </div>
         `;
+        console.log(`✅ Found block ${blockNum}`);
         return;
+      } else {
+        console.log(`❌ Block ${blockNum} not found`);
       }
     }
 
@@ -405,25 +425,29 @@ async function searchBlocks() {
     }
 
     if (searchLower === 'latest' || searchLower === 'newest') {
-      const latestBlockData = await loadBlock(latestBlock);
-      if (latestBlockData) {
-        const reward = latestBlockData.amount || latestBlockData.reward || '0';
-        const rewardTo = latestBlockData.reward_to || 'Unknown';
-        const hash = latestBlockData.hash || 'Unknown';
-        const time = latestBlockData.timestamp ? formatTime(latestBlockData.timestamp) : 'Unknown';
-        const message = latestBlockData.message || '';
+      // First find the latest block, then display it
+      const latestBlockNum = await findLatestBlock();
+      if (latestBlockNum > 0) {
+        const latestBlockData = await loadBlock(latestBlockNum);
+        if (latestBlockData) {
+          const reward = latestBlockData.amount || latestBlockData.reward || '0';
+          const rewardTo = latestBlockData.reward_to || 'Unknown';
+          const hash = latestBlockData.hash || 'Unknown';
+          const time = latestBlockData.timestamp ? formatTime(latestBlockData.timestamp) : 'Unknown';
+          const message = latestBlockData.message || '';
 
-        blocksList.innerHTML = `
-          <div class="block-item">
-            <div class="block-number">#${latestBlock} (Latest)</div>
-            <div class="block-hash">${hash}</div>
-            <div class="block-reward">${reward} BNC</div>
-            <div class="block-hash">${rewardTo}</div>
-            <div class="block-time">${time}</div>
-            ${message ? `<div style="color: #daa520; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 14px;">💬 "${message}"</div>` : ''}
-          </div>
-        `;
-        return;
+          blocksList.innerHTML = `
+            <div class="block-item">
+              <div class="block-number">#${latestBlockNum} (Latest)</div>
+              <div class="block-hash">${hash}</div>
+              <div class="block-reward">${reward} BNC</div>
+              <div class="block-hash">${rewardTo}</div>
+              <div class="block-time">${time}</div>
+              ${message ? `<div style="color: #daa520; font-style: italic; margin-top: 10px; grid-column: 1 / -1; text-align: center; font-size: 14px;">💬 "${message}"</div>` : ''}
+            </div>
+          `;
+          return;
+        }
       }
     }
 
