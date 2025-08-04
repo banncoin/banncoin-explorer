@@ -317,6 +317,49 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(255, 215, 0, 0.4);
         }
+        
+        /* Matrix-like flowing animations */
+        @keyframes blockAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .block-item {
+            animation: blockAppear 0.3s ease-out;
+        }
+        
+        /* Loading animation */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #ffd700;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Button states */
+        .search-bar button:active,
+        .pagination button:active {
+            transform: translateY(1px);
+        }
+        
+        .search-bar button:disabled,
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
     </style>
 </head>
 <body>
