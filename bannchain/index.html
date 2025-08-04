@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bannchain Operations</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #ffd700;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #ffd700;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .explorer-frame {
+            width: 100%;
+            height: calc(100vh - 100px);
+            border: none;
+            background: #1a1a1a;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 18px;
+            color: #ffd700;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 215, 0, 0.3);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Bannchain Operations</h1>
+        <p>Banncoin data from mining operations</p>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <span>Loading Bannchain Explorer...</span>
+    </div>
+    
+    <iframe 
+        src="https://banncoin.github.io/banncoin-explorer/" 
+        class="explorer-frame" 
+        id="explorerFrame"
+        onload="hideLoading()"
+        style="display: none;">
+    </iframe>
+
+    <script>
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('explorerFrame').style.display = 'block';
+        }
+        
+        // Hide loading after 3 seconds even if iframe doesn't load
+        setTimeout(function() {
+            hideLoading();
+        }, 3000);
+    </script>
+</body>
+</html> 
