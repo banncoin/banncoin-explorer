@@ -8,10 +8,10 @@ async function blockExists(blockNumber) {
   }
 }
 
-// Fast search to find the latest block - start high and work down
+// Fast search to find the latest block - start from known high number
 async function findLatestBlock() {
   // Start from a reasonable high number and work down
-  for (let i = 8000; i >= 0; i--) {
+  for (let i = 7450; i >= 0; i--) {
     if (await blockExists(i)) {
       return i;
     }
