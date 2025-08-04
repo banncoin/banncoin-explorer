@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banncoin Block Explorer</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #eee;
+      font-family: monospace;
+      padding: 20px;
+    }
+    .error { color: #f33; }
+    .loading { color: #ff0; }
+    .block, .tx {
+      background: #222;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid #F0D52D;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔍 Banncoin Explorer</h2>
+  <div id="block" class="block loading">loading latest block...</div>
+  <div id="tx" class="tx loading">loading latest transaction...</div>
+  <script src="explorer.js"></script>
+</body>
+</html>
