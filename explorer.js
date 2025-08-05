@@ -1,6 +1,6 @@
 // Addictive and informative Banncoin Explorer
 let currentPage = 1;
-let blocksPerPage = 15; // Show 15 blocks per page (like other explorers)
+let blocksPerPage = 33; // Show 33 blocks per page (Tesla number!)
 let latestBlock = 0;
 let founderWallet = "banncoin.org";
 let lastBlockTime = 0;
@@ -38,7 +38,7 @@ async function findLatestBlock() {
 // Load and display the latest blocks
 async function loadLatestBlocks() {
     const blocksList = document.getElementById('blocksList');
-    blocksList.innerHTML = '<div class="loading">🔄 Fetching latest blocks from miner...</div>';
+    blocksList.innerHTML = '<div class="loading">🔄 Fetching latest 33 blocks from miner...</div>';
 
     try {
         // Reset to page 1 when refreshing
