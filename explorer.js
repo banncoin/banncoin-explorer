@@ -152,7 +152,7 @@ async function displayBlocks() {
 // Load a specific block
 async function loadBlock(blockNumber) {
     try {
-        const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+                        const response = await fetch(`block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}&cb=${Math.random()}`);
         if (response.ok) {
             const block = await response.json();
             
@@ -169,11 +169,11 @@ async function loadBlock(blockNumber) {
     return null;
 }
 
-// Show block details (mobile-friendly popup)
+// Toggle block details (mobile-friendly)
 function showBlockDetails(blockNumber, hash, rewardTo, time, reward) {
     // Check if we're on mobile
     if (window.innerWidth <= 768) {
-        showMobileBlockPopup(blockNumber, hash, rewardTo, time, reward);
+        toggleBlockExpansion(blockNumber);
     } else {
         // On desktop, just search for the block
         const searchInput = document.getElementById('searchInput');
@@ -182,64 +182,21 @@ function showBlockDetails(blockNumber, hash, rewardTo, time, reward) {
     }
 }
 
-// Mobile popup for block details
-function showMobileBlockPopup(blockNumber, hash, rewardTo, time, reward) {
-    // Remove existing popup
-    const existingPopup = document.getElementById('mobileBlockPopup');
-    if (existingPopup) {
-        existingPopup.remove();
+// Toggle block expansion on mobile
+function toggleBlockExpansion(blockNumber) {
+    const blockElement = document.querySelector(`[onclick*="showBlockDetails(${blockNumber}"]`);
+    if (blockElement) {
+        // Close any other expanded blocks first
+        const expandedBlocks = document.querySelectorAll('.block-item.expanded');
+        expandedBlocks.forEach(block => {
+            if (block !== blockElement) {
+                block.classList.remove('expanded');
+            }
+        });
+        
+        // Toggle current block
+        blockElement.classList.toggle('expanded');
     }
-    
-    const popup = document.createElement('div');
-    popup.id = 'mobileBlockPopup';
-    popup.innerHTML = `
-        <div class="mobile-popup-overlay" onclick="closeMobilePopup()"></div>
-        <div class="mobile-popup-content">
-            <div class="mobile-popup-header">
-                <h3>Block #${blockNumber}</h3>
-                <button onclick="closeMobilePopup()" class="close-btn">✕</button>
-            </div>
-            <div class="mobile-popup-body">
-                <div class="detail-row">
-                    <strong>Hash:</strong>
-                    <div class="hash-text">${hash}</div>
-                </div>
-                <div class="detail-row">
-                    <strong>Reward:</strong>
-                    <div>${reward} BNC</div>
-                </div>
-                <div class="detail-row">
-                    <strong>Miner:</strong>
-                    <div class="wallet-text">${rewardTo}</div>
-                </div>
-                <div class="detail-row">
-                    <strong>Time:</strong>
-                    <div>${time}</div>
-                </div>
-            </div>
-            <div class="mobile-popup-footer">
-                <button onclick="viewFullBlock(${blockNumber})" class="view-btn">View Full Block</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(popup);
-}
-
-// Close mobile popup
-function closeMobilePopup() {
-    const popup = document.getElementById('mobileBlockPopup');
-    if (popup) {
-        popup.remove();
-    }
-}
-
-// View full block (from mobile popup)
-function viewFullBlock(blockNumber) {
-    const searchInput = document.getElementById('searchInput');
-    searchInput.value = blockNumber;
-    searchBlock();
-    closeMobilePopup();
 }
 
 // Search for a specific block
