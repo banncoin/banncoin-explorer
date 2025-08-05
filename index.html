@@ -272,6 +272,23 @@
             border-bottom: 1px solid rgba(255, 215, 0, 0.2);
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+        }
+        
+        .block-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #ffd700, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .block-item:hover::before {
+            opacity: 1;
         }
 
         .block-item:hover {
@@ -296,6 +313,32 @@
             border-radius: 10px;
             font-size: 10px;
             font-weight: bold;
+        }
+        
+        .block-item.genesis {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 4px solid #ffd700;
+            animation: genesisPulse 3s infinite;
+        }
+        
+        .block-item.milestone {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffed4e;
+        }
+        
+        .block-item.tesla {
+            background: rgba(255, 215, 0, 0.08);
+            border-left: 4px solid #ffd700;
+        }
+        
+        .block-item.latest {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+        }
+        
+        @keyframes genesisPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
         }
 
         .block-number {
@@ -423,13 +466,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌀 Bannchain Operations</h1>
-            <p>Live blockchain data from mining operations</p>
+            <h1>Bannchain Operations</h1>
+            <p>Banncoin data from mining operations</p>
         </div>
         
-        <div class="live-ticker" id="liveTicker">
-            🔄 Syncing latest blocks...
-        </div>
+
 
         <div class="stats-bar">
             <div class="stat-card live" onclick="loadLatestBlocks()" style="cursor: pointer;">
@@ -468,7 +509,7 @@
                 <div>Time</div>
             </div>
             <div id="blocksList">
-                <div class="loading">Loading blocks...</div>
+                <div class="loading">🔄 Loading blocks...</div>
             </div>
         </div>
 

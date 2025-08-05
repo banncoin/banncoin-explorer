@@ -56,19 +56,8 @@ async function loadLatestBlocks() {
         await displayBlocks();
         updatePagination();
         
-        // Check for new blocks since last visit
-        if (lastCheckedBlock > 0 && latestBlock > lastCheckedBlock) {
-            const newBlocks = latestBlock - lastCheckedBlock;
-            blockStreak += newBlocks;
-            const ticker = document.getElementById('liveTicker');
-            ticker.textContent = `🎉 ${newBlocks} new blocks found! Total streak: ${blockStreak}`;
-            setTimeout(() => updateLiveTicker(), 3000);
-        } else {
-            // Show success message briefly
-            const ticker = document.getElementById('liveTicker');
-            ticker.textContent = `✅ Fresh data loaded! Block #${latestBlock} is latest`;
-            setTimeout(() => updateLiveTicker(), 2000);
-        }
+        // Show success message briefly
+        console.log(`✅ Fresh data loaded! Block #${latestBlock} is latest`);
         
         lastCheckedBlock = latestBlock;
         
@@ -120,9 +109,27 @@ async function displayBlocks() {
                 `;
             }
 
+            // Add fun elements for special blocks
+            let specialClass = '';
+            let specialIcon = '';
+            
+            if (i === 0) {
+                specialClass = 'genesis';
+                specialIcon = '⚡';
+            } else if (i % 1000 === 0) {
+                specialClass = 'milestone';
+                specialIcon = '🎯';
+            } else if (i % 333 === 0) {
+                specialClass = 'tesla';
+                specialIcon = '⚡';
+            } else if (i === latestBlock) {
+                specialClass = 'latest';
+                specialIcon = '🆕';
+            }
+            
             html += `
-                <div class="block-item ${founderClass}" onclick="searchBlock(${i})">
-                    <div class="block-number">${blockNumber}</div>
+                <div class="block-item ${founderClass} ${specialClass}" onclick="searchBlock(${i})" title="${specialIcon ? specialIcon + ' ' : ''}Block #${i}">
+                    <div class="block-number">${specialIcon}${blockNumber}</div>
                     <div class="block-hash">${hash}</div>
                     <div class="block-reward">${reward} BNC</div>
                     <div class="block-miner">${rewardTo}</div>
@@ -209,8 +216,10 @@ function updateStats() {
         rewardSubtitle.textContent = `⚡ Tesla number!`;
     }
     
-    // Update live ticker
-    updateLiveTicker();
+    // Add view counter to console for fun
+    console.log(`👁️ View #${viewCount} | Block #${latestBlock} | Total: ${totalRewards.toLocaleString()} BNC`);
+    
+
     
     console.log(`📊 Updated stats: Latest=${latestBlock}, Rewards=${totalRewards}`);
 }
@@ -226,7 +235,7 @@ function updateLiveTicker() {
         `🌐 Bannnet is live and active`,
         `🧠 You're among the first ${Math.floor(Math.random() * 50) + 10} viewers today!`,
         `⚡ Tesla would be proud of this energy!`,
-        `🎯 Next halving in ${Math.max(0, 100000 - latestBlock).toLocaleString()} blocks`,
+        `🎯 Next halving in ${Math.max(0, 1095000 - latestBlock).toLocaleString()} blocks`,
         `🔥 Genesis block: "Think in terms of energy, frequency and vibration"`,
         `⚡ 333 BNC per block - perfect Tesla energy!`
     ];
@@ -306,18 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Start ticker rotation
-    startTickerRotation();
-    
     // Increment view count
     viewCount++;
     console.log(`👁️ View #${viewCount} - Welcome to the Bannchain!`);
 });
 
-// Start ticker message rotation
-function startTickerRotation() {
-    tickerInterval = setInterval(() => {
-        updateLiveTicker();
-    }, 5000); // Change message every 5 seconds
-}
+
 
