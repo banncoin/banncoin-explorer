@@ -6,6 +6,8 @@ let founderWallet = "banncoin.org";
 let lastBlockTime = 0;
 let tickerInterval = null;
 let viewCount = 0;
+let blockStreak = 0;
+let lastCheckedBlock = 0;
 
 // Find the latest block efficiently
 async function findLatestBlock() {
@@ -36,9 +38,13 @@ async function findLatestBlock() {
 // Load and display the latest blocks
 async function loadLatestBlocks() {
     const blocksList = document.getElementById('blocksList');
-    blocksList.innerHTML = '<div class="loading">Loading blocks...</div>';
+    blocksList.innerHTML = '<div class="loading">🔄 Fetching latest blocks from miner...</div>';
 
     try {
+        // Reset to page 1 when refreshing
+        currentPage = 1;
+        
+        // Find the latest block (this will fetch fresh data)
         latestBlock = await findLatestBlock();
         
         if (latestBlock === 0) {
@@ -50,10 +56,26 @@ async function loadLatestBlocks() {
         await displayBlocks();
         updatePagination();
         
+        // Check for new blocks since last visit
+        if (lastCheckedBlock > 0 && latestBlock > lastCheckedBlock) {
+            const newBlocks = latestBlock - lastCheckedBlock;
+            blockStreak += newBlocks;
+            const ticker = document.getElementById('liveTicker');
+            ticker.textContent = `🎉 ${newBlocks} new blocks found! Total streak: ${blockStreak}`;
+            setTimeout(() => updateLiveTicker(), 3000);
+        } else {
+            // Show success message briefly
+            const ticker = document.getElementById('liveTicker');
+            ticker.textContent = `✅ Fresh data loaded! Block #${latestBlock} is latest`;
+            setTimeout(() => updateLiveTicker(), 2000);
+        }
+        
+        lastCheckedBlock = latestBlock;
+        
         console.log('✅ Latest blocks loaded successfully');
     } catch (error) {
         console.error('❌ Error loading blocks:', error);
-        blocksList.innerHTML = '<div class="error">Error loading blocks. Please refresh.</div>';
+        blocksList.innerHTML = '<div class="error">Error loading blocks. Please try again.</div>';
     }
 }
 
@@ -86,7 +108,16 @@ async function displayBlocks() {
             // Special handling for genesis block message
             let genesisMessage = '';
             if (i === 0 && block.message) {
-                genesisMessage = `<div style="color: #ffd700; font-style: italic; margin-top: 5px; grid-column: 1 / -1; text-align: center; font-size: 14px;">⚡ "${block.message}"</div>`;
+                genesisMessage = `
+                    <div style="grid-column: 1 / -1; text-align: center; margin-top: 10px; padding: 15px; background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1)); border: 2px solid #ffd700; border-radius: 10px; animation: genesisGlow 3s infinite;">
+                        <div style="color: #ffd700; font-style: italic; font-size: 16px; font-weight: bold; text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);">
+                            ⚡ "${block.message}" ⚡
+                        </div>
+                        <div style="color: #ffed4e; font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                            — Nikola Tesla (Genesis Block)
+                        </div>
+                    </div>
+                `;
             }
 
             html += `
@@ -157,13 +188,7 @@ function updateStats() {
     const totalRewards = latestBlock * 333;
     document.getElementById('totalRewards').textContent = `${totalRewards.toLocaleString()} BNC`;
     
-    // Calculate mining rate
-    if (lastBlockTime > 0) {
-        const now = Date.now();
-        const timeDiff = (now - lastBlockTime) / 1000 / 60; // minutes
-        const miningRate = (1 / timeDiff).toFixed(1);
-        document.getElementById('miningRate').textContent = miningRate;
-    }
+    // Mining rate calculation removed until perfect 26-second timing
     
     // Update reward subtitle with fun facts
     const rewardSubtitle = document.getElementById('rewardSubtitle');
@@ -171,8 +196,17 @@ function updateStats() {
         rewardSubtitle.textContent = `🎉 Over 1M BNC!`;
     } else if (totalRewards > 500000) {
         rewardSubtitle.textContent = `🚀 Halfway to 1M!`;
+    } else if (totalRewards > 100000) {
+        rewardSubtitle.textContent = `🔥 100K+ BNC!`;
     } else {
         rewardSubtitle.textContent = `BNC mined`;
+    }
+    
+    // Add addictive mining milestones
+    if (latestBlock % 1000 === 0) {
+        rewardSubtitle.textContent = `🎯 ${latestBlock.toLocaleString()} blocks!`;
+    } else if (latestBlock % 333 === 0) {
+        rewardSubtitle.textContent = `⚡ Tesla number!`;
     }
     
     // Update live ticker
@@ -184,14 +218,17 @@ function updateStats() {
 // Update live ticker with addictive messages
 function updateLiveTicker() {
     const ticker = document.getElementById('liveTicker');
+    const totalRewards = (latestBlock * 333).toLocaleString();
+    
     const messages = [
         `🔄 Block #${latestBlock} synced!`,
-        `⚡ Mining rate: ${document.getElementById('miningRate').textContent} blocks/min`,
-        `💰 Total rewards: ${(latestBlock * 333).toLocaleString()} BNC`,
+        `💰 Total rewards: ${totalRewards} BNC`,
         `🌐 Bannnet is live and active`,
         `🧠 You're among the first ${Math.floor(Math.random() * 50) + 10} viewers today!`,
-        `📈 Only ${(1000000000 - latestBlock).toLocaleString()} blocks to go!`,
-        `⚡ Tesla would be proud of this energy!`
+        `⚡ Tesla would be proud of this energy!`,
+        `🎯 Next halving in ${Math.max(0, 100000 - latestBlock).toLocaleString()} blocks`,
+        `🔥 Genesis block: "Think in terms of energy, frequency and vibration"`,
+        `⚡ 333 BNC per block - perfect Tesla energy!`
     ];
     
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
