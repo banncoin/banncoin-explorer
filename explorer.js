@@ -128,7 +128,7 @@ async function displayBlocks() {
             }
             
             html += `
-                <div class="block-item ${founderClass} ${specialClass}" onclick="searchBlock(${i})" title="${specialIcon ? specialIcon + ' ' : ''}Block #${i}">
+                <div class="block-item ${founderClass} ${specialClass}" onclick="showBlockDetails(${i}, '${hash}', '${rewardTo}', '${time}', '${reward}')" title="${specialIcon ? specialIcon + ' ' : ''}Block #${i}">
                     <div class="block-number">${specialIcon}${blockNumber}</div>
                     <div class="block-hash">${hash}</div>
                     <div class="block-reward">${reward} BNC</div>
@@ -167,6 +167,79 @@ async function loadBlock(blockNumber) {
         console.error(`Error loading block ${blockNumber}:`, error);
     }
     return null;
+}
+
+// Show block details (mobile-friendly popup)
+function showBlockDetails(blockNumber, hash, rewardTo, time, reward) {
+    // Check if we're on mobile
+    if (window.innerWidth <= 768) {
+        showMobileBlockPopup(blockNumber, hash, rewardTo, time, reward);
+    } else {
+        // On desktop, just search for the block
+        const searchInput = document.getElementById('searchInput');
+        searchInput.value = blockNumber;
+        searchBlock();
+    }
+}
+
+// Mobile popup for block details
+function showMobileBlockPopup(blockNumber, hash, rewardTo, time, reward) {
+    // Remove existing popup
+    const existingPopup = document.getElementById('mobileBlockPopup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+    
+    const popup = document.createElement('div');
+    popup.id = 'mobileBlockPopup';
+    popup.innerHTML = `
+        <div class="mobile-popup-overlay" onclick="closeMobilePopup()"></div>
+        <div class="mobile-popup-content">
+            <div class="mobile-popup-header">
+                <h3>Block #${blockNumber}</h3>
+                <button onclick="closeMobilePopup()" class="close-btn">✕</button>
+            </div>
+            <div class="mobile-popup-body">
+                <div class="detail-row">
+                    <strong>Hash:</strong>
+                    <div class="hash-text">${hash}</div>
+                </div>
+                <div class="detail-row">
+                    <strong>Reward:</strong>
+                    <div>${reward} BNC</div>
+                </div>
+                <div class="detail-row">
+                    <strong>Miner:</strong>
+                    <div class="wallet-text">${rewardTo}</div>
+                </div>
+                <div class="detail-row">
+                    <strong>Time:</strong>
+                    <div>${time}</div>
+                </div>
+            </div>
+            <div class="mobile-popup-footer">
+                <button onclick="viewFullBlock(${blockNumber})" class="view-btn">View Full Block</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(popup);
+}
+
+// Close mobile popup
+function closeMobilePopup() {
+    const popup = document.getElementById('mobileBlockPopup');
+    if (popup) {
+        popup.remove();
+    }
+}
+
+// View full block (from mobile popup)
+function viewFullBlock(blockNumber) {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = blockNumber;
+    searchBlock();
+    closeMobilePopup();
 }
 
 // Search for a specific block
