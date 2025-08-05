@@ -199,12 +199,14 @@ function updateStats() {
     
     // Update reward subtitle with fun facts
     const rewardSubtitle = document.getElementById('rewardSubtitle');
-    if (totalRewards > 1000000) {
+    if (totalRewards > 3000000) {
+        rewardSubtitle.textContent = `🚀 Approaching 3M BNC!`;
+    } else if (totalRewards > 2500000) {
+        rewardSubtitle.textContent = `🔥 2.5M+ BNC mined!`;
+    } else if (totalRewards > 2000000) {
+        rewardSubtitle.textContent = `⚡ 2M+ BNC milestone!`;
+    } else if (totalRewards > 1000000) {
         rewardSubtitle.textContent = `🎉 Over 1M BNC!`;
-    } else if (totalRewards > 500000) {
-        rewardSubtitle.textContent = `🚀 Halfway to 1M!`;
-    } else if (totalRewards > 100000) {
-        rewardSubtitle.textContent = `🔥 100K+ BNC!`;
     } else {
         rewardSubtitle.textContent = `BNC mined`;
     }

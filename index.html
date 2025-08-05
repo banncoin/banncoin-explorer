@@ -20,6 +20,8 @@
             min-height: 100vh;
             line-height: 1.6;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
@@ -447,18 +449,115 @@
         }
 
         @media (max-width: 768px) {
-            .blocks-header, .block-item {
-                grid-template-columns: 60px 1fr 80px;
+            .container {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 15px 10px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+                margin-bottom: 5px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
                 gap: 10px;
-                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .stat-card {
+                padding: 12px 8px;
+            }
+            
+            .stat-card h3 {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            
+            .stat-card .value {
+                font-size: 16px;
+                margin-bottom: 3px;
+            }
+            
+            .stat-card .subtitle {
+                font-size: 10px;
+            }
+            
+            .search-section {
+                padding: 10px 5px;
+                margin-bottom: 15px;
+            }
+            
+            .search-input {
+                width: 120px;
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+            
+            .search-btn {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            .blocks-header, .block-item {
+                grid-template-columns: 70px 1fr 90px;
+                gap: 8px;
+                padding: 12px 8px;
+                font-size: 13px;
             }
             
             .block-hash, .block-miner {
                 display: none;
             }
             
-            .search-input {
-                width: 150px;
+            .block-number {
+                font-size: 14px;
+                font-weight: bold;
+            }
+            
+            .block-reward {
+                font-size: 13px;
+                font-weight: bold;
+            }
+            
+            .block-time {
+                font-size: 11px;
+                opacity: 0.8;
+            }
+            
+            .pagination {
+                gap: 5px;
+                margin-top: 15px;
+                flex-wrap: wrap;
+            }
+            
+            .pagination button {
+                padding: 8px 12px;
+                font-size: 13px;
+                min-width: 60px;
+            }
+            
+            .pagination .page-info {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+            
+            .blocks-section {
+                padding: 10px 5px;
+                margin-bottom: 15px;
+            }
+            
+            .footer {
+                padding: 15px 10px;
+                font-size: 12px;
             }
         }
     </style>
