@@ -169,34 +169,136 @@ async function loadBlock(blockNumber) {
     return null;
 }
 
-// Toggle block details (mobile-friendly)
-function showBlockDetails(blockNumber, hash, rewardTo, time, reward) {
-    // Check if we're on mobile
-    if (window.innerWidth <= 768) {
-        toggleBlockExpansion(blockNumber);
-    } else {
-        // On desktop, just search for the block
-        const searchInput = document.getElementById('searchInput');
-        searchInput.value = blockNumber;
-        searchBlock();
+// Show comprehensive block details
+async function showBlockDetails(blockNumber, hash, rewardTo, time, reward) {
+    // Load the full block data
+    const block = await loadBlock(blockNumber);
+    if (block) {
+        showBlockPopup(blockNumber, block);
     }
 }
 
-// Toggle block expansion on mobile
-function toggleBlockExpansion(blockNumber) {
-    const blockElement = document.querySelector(`[onclick*="showBlockDetails(${blockNumber}"]`);
-    if (blockElement) {
-        // Close any other expanded blocks first
-        const expandedBlocks = document.querySelectorAll('.block-item.expanded');
-        expandedBlocks.forEach(block => {
-            if (block !== blockElement) {
-                block.classList.remove('expanded');
-            }
-        });
-        
-        // Toggle current block
-        blockElement.classList.toggle('expanded');
+// Show comprehensive block popup
+function showBlockPopup(blockNumber, block) {
+    // Remove existing popup
+    const existingPopup = document.getElementById('blockPopup');
+    if (existingPopup) {
+        existingPopup.remove();
     }
+    
+    // Format timestamp
+    const timestamp = block.timestamp ? new Date(block.timestamp).toLocaleString() : 'Unknown';
+    const exactTimestamp = block.timestamp || 'Unknown';
+    
+    // Get block data
+    const height = block.height || block.index || blockNumber;
+    const difficulty = block.difficulty || 'Unknown';
+    const nonce = block.nonce || 'Unknown';
+    const prevHash = block.prev_hash || block.previous_hash || 'Unknown';
+    const network = block.network || 'bannnet';
+    const message = block.message || '';
+    const transactions = block.transactions || [];
+    
+    const popup = document.createElement('div');
+    popup.id = 'blockPopup';
+    popup.innerHTML = `
+        <div class="block-popup-overlay" onclick="closeBlockPopup()"></div>
+        <div class="block-popup-content">
+            <div class="block-popup-header">
+                <h3>Block #${height}</h3>
+                <button onclick="closeBlockPopup()" class="close-btn">✕</button>
+            </div>
+            <div class="block-popup-body">
+                <div class="detail-section">
+                    <h4>📊 Block Info</h4>
+                    <div class="detail-row">
+                        <strong>Height:</strong> <span>${height}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Difficulty:</strong> <span>${difficulty}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Nonce:</strong> <span>${nonce}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Network:</strong> <span>${network}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>💰 Reward Info</h4>
+                    <div class="detail-row">
+                        <strong>Reward:</strong> <span>${block.reward || block.amount || 333} BNC</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Miner:</strong> <span class="wallet-text">${block.reward_to || block.rewardTo || 'Unknown'}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>🔗 Hash Info</h4>
+                    <div class="detail-row">
+                        <strong>Hash:</strong> <span class="hash-text">${block.hash}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Previous Hash:</strong> <span class="hash-text">${prevHash}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>⏰ Timestamp</h4>
+                    <div class="detail-row">
+                        <strong>Formatted:</strong> <span>${timestamp}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Exact:</strong> <span class="timestamp-text">${exactTimestamp}</span>
+                    </div>
+                </div>
+                
+                ${message ? `
+                <div class="detail-section">
+                    <h4>💬 Genesis Message</h4>
+                    <div class="detail-row genesis-message">
+                        <span>"${message}"</span>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${transactions.length > 0 ? `
+                <div class="detail-section">
+                    <h4>📝 Transactions (${transactions.length})</h4>
+                    <div class="detail-row">
+                        <span>${JSON.stringify(transactions, null, 2)}</span>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            <div class="block-popup-footer">
+                <button onclick="searchBlock(${blockNumber})" class="view-btn">View in Explorer</button>
+                <button onclick="copyBlockData(${blockNumber})" class="copy-btn">Copy JSON</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(popup);
+}
+
+// Close block popup
+function closeBlockPopup() {
+    const popup = document.getElementById('blockPopup');
+    if (popup) {
+        popup.remove();
+    }
+}
+
+// Copy block JSON data
+function copyBlockData(blockNumber) {
+    loadBlock(blockNumber).then(block => {
+        if (block) {
+            navigator.clipboard.writeText(JSON.stringify(block, null, 2));
+            alert('Block JSON copied to clipboard!');
+        }
+    });
 }
 
 // Search for a specific block
