@@ -24,6 +24,11 @@
             -webkit-text-size-adjust: 100%;
             -webkit-tap-highlight-color: transparent;
         }
+        
+        /* Hide old navigation bar */
+        nav, .nav, .navigation, header > *:not(.header) {
+            display: none !important;
+        }
 
         .container {
             max-width: 95%;
@@ -523,7 +528,11 @@
             border-radius: 8px;
         }
         
-
+    }
+    
+    /* Hide old navigation bar */
+    nav, .nav, .navigation, header > *:not(.header) {
+        display: none !important;
     }
   </style>
 </head>

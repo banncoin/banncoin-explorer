@@ -1,0 +1,11 @@
+{
+    "difficulty": 3,
+    "hash": "000d50116901794846bef32af8739f232d4d105e0f0866d58201b7c31540380d",
+    "height": 9434,
+    "network": "bannnet",
+    "nonce": 3418,
+    "prev_hash": "000df5391470f394507e1aee5d37019cb8501025abda02eb0e3bda1bef103c1f",
+    "reward": 333,
+    "reward_to": "bc1q94jv4durr3kjvufsvnmxzsxcz7kwcs0cn8mxn0",
+    "timestamp": "2025-08-05T05:06:08Z"
+}
