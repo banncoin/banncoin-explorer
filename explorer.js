@@ -10,14 +10,14 @@ let allBlocks = [];
 // Initialize the explorer
 document.addEventListener('DOMContentLoaded', function() {
     loadLatestBlocks();
-    setInterval(loadLatestBlocks, 30000); // Auto-refresh every 30 seconds
+    setInterval(loadLatestBlocks, 60000); // Auto-refresh every 60 seconds (less frequent)
 });
 
 // Find the latest block by searching backwards from a high number
 async function findLatestBlock() {
     for (let i = 50000; i >= 0; i -= 50) { // Increased to 50000 to find higher blocks
         try {
-            const response = await fetch(`http://localhost:8081/block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`http://localhost:8081/block${i.toString().padStart(4, '0')}.json`)}&cb=${Math.random()}`);
             if (response.ok) {
                 const block = await response.json();
                 if (block && block.height) {
@@ -35,7 +35,7 @@ async function findLatestBlock() {
 // Load a specific block
 async function loadBlock(blockNumber) {
     try {
-        const response = await fetch(`http://localhost:8081/block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
+        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`http://localhost:8081/block${blockNumber.toString().padStart(4, '0')}.json`)}&cb=${Math.random()}`);
         if (response.ok) {
             return await response.json();
         }
