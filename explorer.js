@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Find the latest block by searching backwards from a high number
 async function findLatestBlock() {
-    for (let i = 20000; i >= 0; i -= 50) { // Changed from 15300
+    for (let i = 50000; i >= 0; i -= 50) { // Increased to 50000 to find higher blocks
         try {
             const response = await fetch(`http://localhost:8081/block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
             if (response.ok) {
