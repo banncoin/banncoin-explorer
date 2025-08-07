@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function findLatestBlock() {
     for (let i = 20000; i >= 0; i -= 50) { // Changed from 15300
         try {
-            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`http://localhost:8081/block${i.toString().padStart(4, '0')}.json`)}&cb=${Math.random()}`);
+            const response = await fetch(`http://localhost:8080/block${i.toString().padStart(4, '0')}.json?v=${Date.now()}`);
             if (response.ok) {
                 const block = await response.json();
                 if (block && block.height) {
@@ -35,7 +35,7 @@ async function findLatestBlock() {
 // Load a specific block
 async function loadBlock(blockNumber) {
     try {
-        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`http://localhost:8081/block${blockNumber.toString().padStart(4, '0')}.json`)}&cb=${Math.random()}`);
+        const response = await fetch(`http://localhost:8080/block${blockNumber.toString().padStart(4, '0')}.json?v=${Date.now()}`);
         if (response.ok) {
             return await response.json();
         }
