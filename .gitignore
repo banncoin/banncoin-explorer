@@ -5,3 +5,4 @@ block*.json
 # Optional backups / temp files
 *.save
 *.bak
+*:Zone.Identifier*
