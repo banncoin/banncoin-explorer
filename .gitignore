@@ -1,0 +1,7 @@
+# Ignore block data files
+block*.json
+*:Zone.Identifier*
+
+# Optional backups / temp files
+*.save
+*.bak
